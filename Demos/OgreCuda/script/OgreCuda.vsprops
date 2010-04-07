@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="OgreCuda"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(OgreCuda)&quot;;&quot;$(CUDA_SRC)\include&quot;;&quot;$(OGRE_HOME)\include\OGRE\RenderSystems\Direct3D9&quot;;&quot;$(OGRE_HOME)\include\OGRE\RenderSystems\Direct3D10&quot;;&quot;$(OGRE_HOME)\include\OGRE\RenderSystems\Direct3D11&quot;;&quot;$(OGRE_HOME)\include\OGRE\RenderSystems\GL&quot;"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="cuda.lib cudart.lib "
+		AdditionalLibraryDirectories="$(CUDA_SRC)\lib"
+	/>
+	<UserMacro
+		Name="OgreCuda"
+		Value="$(SolutionDir)\OgreCuda\include"
+	/>
+	<UserMacro
+		Name="CUDA_SRC"
+		Value="c:\cuda"
+	/>
+</VisualStudioPropertySheet>

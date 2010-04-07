@@ -3,6 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArToolKitPlusDemo", "ArToolKitPlusDemo\script\ArToolKitPlusDemo.vcproj", "{BCACA889-BDEE-4BAA-BFB1-42A10C792A2C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreCuda", "OgreCuda\script\OgreCuda.vcproj", "{D2B63832-4C76-4B72-A371-0EE8AB71AE53}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreCudaDemo", "OgreCudaDemo\script\OgreCudaDemo.vcproj", "{458AC36D-5111-4450-BCCC-B97D84081903}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D2B63832-4C76-4B72-A371-0EE8AB71AE53} = {D2B63832-4C76-4B72-A371-0EE8AB71AE53}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +20,14 @@ Global
 		{BCACA889-BDEE-4BAA-BFB1-42A10C792A2C}.Debug|Win32.Build.0 = Debug|Win32
 		{BCACA889-BDEE-4BAA-BFB1-42A10C792A2C}.Release|Win32.ActiveCfg = Release|Win32
 		{BCACA889-BDEE-4BAA-BFB1-42A10C792A2C}.Release|Win32.Build.0 = Release|Win32
+		{D2B63832-4C76-4B72-A371-0EE8AB71AE53}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D2B63832-4C76-4B72-A371-0EE8AB71AE53}.Debug|Win32.Build.0 = Debug|Win32
+		{D2B63832-4C76-4B72-A371-0EE8AB71AE53}.Release|Win32.ActiveCfg = Release|Win32
+		{D2B63832-4C76-4B72-A371-0EE8AB71AE53}.Release|Win32.Build.0 = Release|Win32
+		{458AC36D-5111-4450-BCCC-B97D84081903}.Debug|Win32.ActiveCfg = Debug|Win32
+		{458AC36D-5111-4450-BCCC-B97D84081903}.Debug|Win32.Build.0 = Debug|Win32
+		{458AC36D-5111-4450-BCCC-B97D84081903}.Release|Win32.ActiveCfg = Release|Win32
+		{458AC36D-5111-4450-BCCC-B97D84081903}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
