@@ -44,7 +44,7 @@ D3D10Root::D3D10Root(Ogre::RenderWindow* renderWindow)
 void D3D10Root::init()
 {
 	cudaD3D10SetDirect3DDevice(mDevice);
-	cudaThreadSynchronize();
+	wait();
 }
 
 //CudaD3D10Texture
@@ -60,40 +60,9 @@ D3D10Texture::D3D10Texture(Ogre::TexturePtr& texture)
 
 void D3D10Texture::registerForCudaUse()
 { 
-	cudaD3D10RegisterResource(mD3D10Texture, CU_D3D10_REGISTER_FLAGS_NONE);
-}
-
-void D3D10Texture::unregister()
-{
-	cudaD3D10UnregisterResource(mD3D10Texture);
-}
-
-void D3D10Texture::map()
-{
-	cudaD3D10MapResources(1, (ID3D10Resource**)&mD3D10Texture);
-}
-
-void D3D10Texture::unmap()
-{
-	cudaD3D10UnmapResources(1, (ID3D10Resource**)&mD3D10Texture);
-}
-
-void* D3D10Texture::getPointer(unsigned int face, unsigned int level)
-{
-	void* devicePointer;
-	unsigned int subResource = D3D10CalcSubresource(level, face, mNbMipMaps);
-	cudaD3D10ResourceGetMappedPointer(&devicePointer, mD3D10Texture, subResource);
-
-	return devicePointer;
-}
-
-Ogre::Vector2 D3D10Texture::getDimensions(unsigned int face, unsigned int level)
-{
-	size_t width, height;
-	unsigned int subResource = D3D10CalcSubresource(level, face, mNbMipMaps);
-	cudaD3D10ResourceGetSurfaceDimensions(&width, &height, NULL, mD3D10Texture, subResource);
-
-	return Ogre::Vector2((Ogre::Real)width, (Ogre::Real)height);
+	cudaGraphicsD3D10RegisterResource(&mCudaRessource, mD3D10Texture, cudaGraphicsRegisterFlagsNone);
+	cudaMallocPitch(&mCudaLinearMemory, &mPitch, mTexture->getWidth() * sizeof(char) * 4, mTexture->getHeight());
+	cudaMemset(mCudaLinearMemory, 1, mPitch * mTexture->getHeight());
 }
 
 //D3D10TextureManager

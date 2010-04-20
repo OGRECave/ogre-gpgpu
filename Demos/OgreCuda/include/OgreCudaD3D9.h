@@ -47,15 +47,9 @@ namespace Ogre
 				D3D9Texture(Ogre::TexturePtr& texture);
 
 				virtual void registerForCudaUse();
-				virtual void unregister();
-
-				virtual void map();
-				virtual void unmap();
-				virtual void* getPointer(unsigned int face, unsigned int level);
-				virtual Ogre::Vector2 getDimensions(unsigned int face, unsigned int level);
-
+				
 			protected:
-				IDirect3DBaseTexture9* mD3D9Texture;		
+				IDirect3DBaseTexture9* mD3D9Texture;
 		};
 
 		class D3D9TextureManager : public TextureManager

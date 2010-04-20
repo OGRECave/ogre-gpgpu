@@ -22,6 +22,8 @@
 
 #include "OgreCudaGL.h"
 
+#include <OgreGLHardwarePixelBuffer.h>
+
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
@@ -39,63 +41,29 @@ GLRoot::GLRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* renderSyste
 
 	Ogre::GLContext* context = (GLContext*) data;
 
-	mDevice = 0;
+	mDevice = 0; //this value should be extracted from Ogre (using GLContext ?)
 	mTextureManager = new Ogre::Cuda::GLTextureManager;
 }
 
 void GLRoot::init()
 {
 	cudaGLSetGLDevice(mDevice);
-	cudaThreadSynchronize();
+	wait();
 }
 
 //CudaGLTexture
 
 GLTexture::GLTexture(Ogre::TexturePtr& texture)
-: Texture(texture), mDevicePointer(NULL)
+: Texture(texture)
 {
 	mGLTextureId = static_cast<Ogre::GLTexturePtr>(mTexture)->getGLID();
 }
 
 void GLTexture::registerForCudaUse()
 {
-	cudaGLRegisterBufferObject(mGLTextureId);
-}
-
-void GLTexture::unregister()
-{
-	cudaGLUnregisterBufferObject(mGLTextureId);
-}
-
-void GLTexture::map()
-{
-	cudaGLMapBufferObject(&mDevicePointer, mGLTextureId);
-}
-
-void GLTexture::unmap()
-{	
-	cudaGLUnmapBufferObject(mGLTextureId);
-}
-
-void* GLTexture::getPointer(unsigned int face, unsigned int level)
-{
-	//do something usefull with mDevicePointer
-
-	return NULL;
-}
-
-Ogre::Vector2 GLTexture::getDimensions(unsigned int face, unsigned int level)
-{
-	//very hacky solution that doesn't take face in count
-	int width  = mTexture->getWidth();
-	int height = mTexture->getHeight();
-
-	for (unsigned int i=0; i<level; ++i)
-	{
-		width  /= 2;
-		height /= 2;
-	}
-	return Ogre::Vector2((Ogre::Real)width, (Ogre::Real)height);
+	cudaGraphicsGLRegisterImage(&mCudaRessource, mGLTextureId, GL_TEXTURE_2D, cudaGraphicsRegisterFlagsNone);
+	cudaMallocPitch(&mCudaLinearMemory, &mPitch, mTexture->getWidth() * sizeof(char) * 4, mTexture->getHeight());
+	cudaMemset(mCudaLinearMemory, 1, mPitch * mTexture->getHeight());
 }
 
 //GLTextureManager

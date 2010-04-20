@@ -45,6 +45,10 @@ bool OgreAppLogic::init(void)
 
 	mApplication->getKeyboard()->setEventCallback(&mOISListener);
 	mApplication->getMouse()->setEventCallback(&mOISListener);
+	
+	int deviceCount = Ogre::Cuda::Root::getDeviceCount();
+	for (int i=0; i<deviceCount; ++i)
+		std:: cout << Ogre::Cuda::Root::getDeviceProperties(i) << std::endl;
 
 	mCudaRoot = Ogre::Cuda::Root::createRoot(mApplication->getRenderWindow(), mApplication->getOgreRoot()->getRenderSystem());
 	mCudaRoot->init();
@@ -76,6 +80,7 @@ bool OgreAppLogic::update(Ogre::Real deltaTime)
 		Ogre::Vector2 dim = mCudaTexture->getDimensions(0, 0);
 		void* deviceTexture = mCudaTexture->getPointer(0, 0);
 		cudaUpdate(deviceTexture, (int)dim.x, (int)dim.y, mTotalTime);
+		mCudaTexture->update();
 		mCudaTexture->unmap();
 	}
 
@@ -128,7 +133,7 @@ void OgreAppLogic::createCamera(void)
 void OgreAppLogic::createScene(void)
 {
 	mSceneMgr->setAmbientLight(ColourValue(0.5,0.5,0.5));
-	mSceneMgr->setSkyBox(true, "Examples/Grid");
+	//mSceneMgr->setSkyBox(true, "Examples/Grid");
 }
 
 //--------------------------------- update --------------------------------
@@ -249,7 +254,7 @@ void OgreAppLogic::createCudaMaterial(int width, int height)
 		height, 
 		0, 
 		Ogre::PF_A8R8G8B8, 
-		Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+		Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE); //Ogre::HardwareBuffer::HBU_DISCARDABLE
 
 	//Create Ogre::Material
 	Ogre::MaterialPtr material = MaterialManager::getSingleton().create("CudaMaterial", 

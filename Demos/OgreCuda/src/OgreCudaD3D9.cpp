@@ -44,7 +44,7 @@ D3D9Root::D3D9Root(Ogre::RenderWindow* renderWindow)
 void D3D9Root::init()
 {
 	cudaD3D9SetDirect3DDevice(mDevice);
-	cudaThreadSynchronize();
+	wait();
 }
 
 //D3D9Texture
@@ -56,39 +56,10 @@ D3D9Texture::D3D9Texture(Ogre::TexturePtr& texture)
 }
 
 void D3D9Texture::registerForCudaUse()
-{
-	cuD3D9RegisterResource((LPDIRECT3DRESOURCE9)mD3D9Texture, CU_D3D9_REGISTER_FLAGS_NONE);
-}
-
-void D3D9Texture::unregister()
-{
-	cuD3D9UnregisterResource((LPDIRECT3DRESOURCE9)mD3D9Texture);
-}
-
-void D3D9Texture::map()
-{
-	cudaD3D9MapResources(1, (IDirect3DResource9 **)&mD3D9Texture);
-}
-
-void D3D9Texture::unmap()
-{
-	cudaD3D9UnmapResources(1, (IDirect3DResource9 **)&mD3D9Texture);
-}
-
-void* D3D9Texture::getPointer(unsigned int face, unsigned int level)
-{
-	void* devicePointer;
-	cudaD3D9ResourceGetMappedPointer(&devicePointer, mD3D9Texture, face, level);
-
-	return devicePointer;
-}
-
-Ogre::Vector2 D3D9Texture::getDimensions(unsigned int face, unsigned int level)
-{
-	size_t width, height;
-	cudaD3D9ResourceGetSurfaceDimensions(&width, &height, NULL, mD3D9Texture, face, level);
-
-	return Ogre::Vector2((Ogre::Real)width, (Ogre::Real)height);
+{	
+	cudaGraphicsD3D9RegisterResource(&mCudaRessource, (LPDIRECT3DRESOURCE9)mD3D9Texture, cudaGraphicsRegisterFlagsNone);
+	cudaMallocPitch(&mCudaLinearMemory, &mPitch, mTexture->getWidth() * sizeof(char) * 4, mTexture->getHeight());
+	cudaMemset(mCudaLinearMemory, 1, mPitch * mTexture->getHeight());
 }
 
 //D3D9TextureManager

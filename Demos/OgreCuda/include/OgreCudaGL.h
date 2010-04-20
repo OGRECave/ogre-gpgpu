@@ -47,16 +47,9 @@ namespace Ogre
 				GLTexture(Ogre::TexturePtr& texture);
 
 				virtual void registerForCudaUse();
-				virtual void unregister();
-
-				virtual void map();
-				virtual void unmap();
-				virtual void* getPointer(unsigned int face, unsigned int level);
-				virtual Ogre::Vector2 getDimensions(unsigned int face, unsigned int level);
 
 			protected:
 				GLuint mGLTextureId;
-				void* mDevicePointer; //Texture pointer in device memory
 		};
 
 		class GLTextureManager : public TextureManager
