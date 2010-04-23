@@ -32,15 +32,16 @@ using namespace Ogre::Cuda;
 //Root
 
 Root::Root()
-: mTextureManager(NULL)
+: mTextureManager(NULL), mVertexBufferManager(NULL)
 {
 	mLastCudaError = cudaSuccess;
+	mCudaStream    = NULL;
 }
 
 Root::~Root()
 {
 	delete mTextureManager;
-	mTextureManager = NULL;
+	delete mVertexBufferManager;
 }
 
 void Root::shutdown()
@@ -58,6 +59,44 @@ TextureManager* Root::getTextureManager()
 	return mTextureManager;
 }
 
+VertexBufferManager* Root::getVertexBufferManager()
+{
+	return mVertexBufferManager;
+}
+
+void Root::map(std::vector<Ogre::Cuda::CudaRessource*> ressources)
+{
+	mCudaStream = NULL;
+	std::vector<struct cudaGraphicsResource*> cudaRessources;
+	for (unsigned int i=0; i<ressources.size(); ++i)
+		cudaRessources.push_back((ressources[i])->mCudaRessource);
+	cudaGraphicsMapResources(cudaRessources.size(), &(cudaRessources[0]), mCudaStream);
+}
+
+void Root::unmap(std::vector<Ogre::Cuda::CudaRessource*> ressources)
+{
+	std::vector<struct cudaGraphicsResource*> cudaRessources;
+	for (unsigned int i=0; i<ressources.size(); ++i)
+		cudaRessources.push_back((ressources[i])->mCudaRessource);
+	cudaGraphicsUnmapResources(cudaRessources.size(), &(cudaRessources[0]), mCudaStream);
+}
+
+bool Root::isCudaStatusOK()
+{
+	mLastCudaError = cudaGetLastError();
+	return mLastCudaError == cudaSuccess;
+}
+
+std::string Root::getErrorMessage()
+{
+	return std::string(cudaGetErrorString(mLastCudaError));
+}
+
+std::string Root::getLastError()
+{
+	return std::string(cudaGetErrorString(cudaGetLastError()));
+}
+
 Root* Root::createRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* renderSystem)
 {
 	std::string renderSystemName = renderSystem->getName();
@@ -68,10 +107,6 @@ Root* Root::createRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* ren
 		return new Ogre::Cuda::D3D9Root(renderWindow);
 	else if (renderSystemName == "Direct3D10 Rendering Subsystem")
 		return new Ogre::Cuda::D3D10Root(renderWindow);
-	/*
-	else if (renderSystemName == "Direct3D11 Rendering Subsystem")
-		return new Ogre::Cuda::D3D11Root(renderWindow);
-	*/
 
 	return NULL;
 }
@@ -81,85 +116,6 @@ void Root::destroyRoot(Root* root)
 	delete root;
 	root = NULL;
 }
-
-//Texture
-
-Texture::Texture(Ogre::TexturePtr texture)
-: mTexture(texture)
-{
-	mCudaRessource    = NULL;
-	mCudaLinearMemory = NULL;
-	mCudaStream       = NULL;
-	mCudaArray        = NULL;
-	mPitch            = 0;
-
-}
-
-void Texture::unregister()
-{
-	cudaGraphicsUnregisterResource(mCudaRessource);
-	cudaFree(mCudaLinearMemory);
-}
-
-void Texture::map()
-{
-	cudaGraphicsMapResources(1, &mCudaRessource, mCudaStream);
-}
-
-void Texture::unmap()
-{	
-	cudaGraphicsUnmapResources(1, &mCudaRessource, mCudaStream);
-}
-
-void* Texture::getPointer(unsigned int face, unsigned int level)
-{
-	cudaGraphicsSubResourceGetMappedArray(&mCudaArray, mCudaRessource, face, level);
-	return mCudaLinearMemory;	
-}
-
-void Texture::update()
-{
-	cudaMemcpyToArray(mCudaArray, 0, 0, mCudaLinearMemory, mPitch * mTexture->getHeight(), cudaMemcpyDeviceToDevice);
-}
-
-Ogre::Vector2 Texture::getDimensions(unsigned int face, unsigned int level)
-{
-	int width  = mTexture->getWidth();
-	int height = mTexture->getHeight();
-
-	for (unsigned int i=0; i<level; ++i)
-	{
-		width  /= 2;
-		height /= 2;
-	}
-	return Ogre::Vector2((Ogre::Real)width, (Ogre::Real)height);
-}
-
-//TextureManager
-
-TextureManager::TextureManager()
-{
-	mCudaStream = NULL;
-}
-
-void TextureManager::map(std::vector<Ogre::Cuda::Texture*> textures)
-{
-	mCudaStream = NULL;
-	std::vector<struct cudaGraphicsResource*> ressources;
-	for (unsigned int i=0; i<textures.size(); ++i)
-		ressources.push_back((textures[i])->mCudaRessource);
-	cudaGraphicsMapResources(textures.size(), &ressources[0], mCudaStream);
-}
-
-void TextureManager::unmap(std::vector<Ogre::Cuda::Texture*> textures)
-{
-	std::vector<struct cudaGraphicsResource*> ressources;
-	for (unsigned int i=0; i<textures.size(); ++i)
-		ressources.push_back((textures[i])->mCudaRessource);
-	cudaGraphicsUnmapResources(textures.size(), &ressources[0], mCudaStream);
-}
-
-//Root
 
 int Root::getDeviceCount()
 {
@@ -199,6 +155,7 @@ int Root::getVideoDriverVersion()
 
 	return version;
 }
+
 DeviceProperties::DeviceProperties()
 {
 	name               = "UNKNOWN";
@@ -225,6 +182,7 @@ DeviceProperties::DeviceProperties()
 	canMapHostMemory         = false;
 	computeMode              = 0;
 }
+
 DeviceProperties::DeviceProperties(const cudaDeviceProp& prop)
 {
 	name               = std::string(prop.name);
@@ -277,18 +235,131 @@ std::ostream& operator <<(std::ostream& output, const DeviceProperties& prop)
 	return output;
 }
 
-bool Root::isCudaStatusOK()
+//Texture
+
+Texture::Texture(Ogre::TexturePtr texture)
+: mTexture(texture)
+{}
+
+TextureDeviceHandle Texture::getDeviceHandle(unsigned int face, unsigned int mipmap)
 {
-	mLastCudaError = cudaGetLastError();
-	return mLastCudaError == cudaSuccess;
+	unsigned int index = getIndex(face, mipmap);	
+	cudaGraphicsSubResourceGetMappedArray(&mDevicePtrs[index].mCudaArray, mCudaRessource, face, mipmap);
+
+	return mDevicePtrs[index];	
 }
 
-std::string Root::getErrorMessage()
+void Texture::update(TextureDeviceHandle& mem)
 {
-	return std::string(cudaGetErrorString(mLastCudaError));
+	cudaMemcpyToArray(mem.mCudaArray, 0, 0, mem.linearMemory, mem.pitch * mem.height, cudaMemcpyDeviceToDevice);
 }
 
-std::string Root::getLastError()
+unsigned int Texture::getIndex(unsigned int face, unsigned int mipmap)
 {
-	return std::string(cudaGetErrorString(cudaGetLastError()));
+	return face*(mTexture->getNumMipmaps()+1) + mipmap;
+}
+
+Ogre::Vector2 Texture::getDimensions(unsigned int face, unsigned int mipmap)
+{
+	unsigned int index = getIndex(face, mipmap);
+	return Ogre::Vector2((Ogre::Real)mDevicePtrs[index].width, (Ogre::Real)mDevicePtrs[index].height);
+}
+
+Ogre::Cuda::RessourceType Texture::getType()
+{
+	return Ogre::Cuda::TEXTURE_RESSOURCE;
+}
+
+void Texture::allocate()
+{
+	size_t pixelSize = Ogre::PixelUtil::getNumElemBits(mTexture->getFormat()) / 8;
+
+	for (unsigned int i=0; i<mTexture->getNumFaces(); ++i)
+	{
+		for (unsigned int j=0; j<mTexture->getNumMipmaps()+1; ++j)
+		{
+			HardwarePixelBufferSharedPtr buffer = mTexture->getBuffer(i, j);
+			unsigned int width  = buffer->getWidth();
+			unsigned int height = buffer->getHeight();
+			
+			size_t pitch = 0;
+			void* linearMemory = NULL;
+			cudaMallocPitch(&linearMemory, &pitch, width * pixelSize, height);
+			mDevicePtrs.push_back(Ogre::Cuda::TextureDeviceHandle(width, height, pitch, linearMemory));
+		}
+	}
+}
+
+void Texture::unregister()
+{
+	CudaRessource::unregister();
+	
+	unsigned int index = 0;
+	for (unsigned int i=0; i<mTexture->getNumFaces(); ++i)
+	{
+		for (unsigned int j=0; j<mTexture->getNumMipmaps()+1; ++j)
+		{
+			cudaFree(mDevicePtrs[index].linearMemory);
+			index++;
+		}
+	}
+}
+
+//VertexBuffer
+
+VertexBuffer::VertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer)
+: mVertexBuffer(vertexBuffer)
+{}
+
+void* VertexBuffer::getPointer()
+{
+	size_t size = 0;
+	void* devicePtr = NULL;
+	cudaGraphicsResourceGetMappedPointer((void **)&devicePtr, &size, mCudaRessource);
+
+	return devicePtr;
+}
+
+Ogre::Cuda::RessourceType VertexBuffer::getType()
+{
+	return Ogre::Cuda::VERTEXBUFFER_RESSOURCE;
+}
+
+//CudaRessource
+
+CudaRessource::CudaRessource()
+{
+	mCudaRessource    = NULL;
+	mCudaStream       = NULL;
+}
+
+void CudaRessource::unregister()
+{
+	cudaGraphicsUnregisterResource(mCudaRessource);
+}
+
+void CudaRessource::map()
+{
+	cudaGraphicsMapResources(1, &mCudaRessource, mCudaStream);
+}
+
+void CudaRessource::unmap()
+{	
+	cudaGraphicsUnmapResources(1, &mCudaRessource, mCudaStream);
+}
+
+//TextureDeviceMemory
+
+TextureDeviceHandle::TextureDeviceHandle(size_t width, size_t height, size_t pitch, void* linearMemory)
+{
+	this->width        = width;
+	this->height       = height;
+	this->pitch        = pitch;
+	this->linearMemory = linearMemory;
+	this->mCudaArray   = NULL;
+}
+
+void* TextureDeviceHandle::getPointer()
+{
+	return linearMemory;
 }

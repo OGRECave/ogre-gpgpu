@@ -34,11 +34,9 @@ using namespace Ogre::Cuda;
 D3D9Root::D3D9Root(Ogre::RenderWindow* renderWindow)
 : Root()
 {
-	void* data = NULL;	
-	renderWindow->getCustomAttribute("D3DDEVICE", &data);
-
-	mDevice = (IDirect3DDevice9*) data;
-	mTextureManager = new Ogre::Cuda::D3D9TextureManager;
+	renderWindow->getCustomAttribute("D3DDEVICE", (void*) &mDevice);
+	mTextureManager      = new Ogre::Cuda::D3D9TextureManager;
+	mVertexBufferManager = new Ogre::Cuda::D3D9VertexBufferManager;
 }
 
 void D3D9Root::init()
@@ -58,8 +56,7 @@ D3D9Texture::D3D9Texture(Ogre::TexturePtr& texture)
 void D3D9Texture::registerForCudaUse()
 {	
 	cudaGraphicsD3D9RegisterResource(&mCudaRessource, (LPDIRECT3DRESOURCE9)mD3D9Texture, cudaGraphicsRegisterFlagsNone);
-	cudaMallocPitch(&mCudaLinearMemory, &mPitch, mTexture->getWidth() * sizeof(char) * 4, mTexture->getHeight());
-	cudaMemset(mCudaLinearMemory, 1, mPitch * mTexture->getHeight());
+	allocate();
 }
 
 //D3D9TextureManager
@@ -73,4 +70,30 @@ void D3D9TextureManager::destroyTexture(Texture* texture)
 {
 	delete (D3D9Texture*)texture;
 	texture = NULL;
+}
+
+//D3D9VertexBuffer
+
+D3D9VertexBuffer::D3D9VertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer)
+: VertexBuffer(vertexBuffer)
+{
+	mD3D9VertexBuffer = static_cast<Ogre::D3D9HardwareVertexBuffer*>(vertexBuffer.get())->getD3D9VertexBuffer();
+}
+
+void D3D9VertexBuffer::registerForCudaUse()
+{
+	cudaGraphicsD3D9RegisterResource(&mCudaRessource, (LPDIRECT3DRESOURCE9)mD3D9VertexBuffer, cudaGraphicsRegisterFlagsNone);
+}
+
+//D3D9VertexBufferManager
+
+VertexBuffer* D3D9VertexBufferManager::createVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer)
+{
+	return new Ogre::Cuda::D3D9VertexBuffer(vertexBuffer);
+}
+
+void D3D9VertexBufferManager::destroyVertexBuffer(VertexBuffer* vertexBuffer)
+{
+	delete (D3D9VertexBuffer*)vertexBuffer;
+	vertexBuffer = NULL;
 }

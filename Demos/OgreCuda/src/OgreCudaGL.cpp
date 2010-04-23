@@ -29,6 +29,8 @@
 #include <cuda_gl_interop.h>
 #include <cudaGL.h>
 
+#include <OgreWin32Context.h>
+
 //GLRoot
 
 using namespace Ogre::Cuda;
@@ -36,13 +38,12 @@ using namespace Ogre::Cuda;
 GLRoot::GLRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* renderSystem)
 : Root()
 {
-	void* data = NULL;
-	renderWindow->getCustomAttribute("GLCONTEXT", &data);
-
-	Ogre::GLContext* context = (GLContext*) data;
+	Ogre::GLContext* context = NULL;
+	renderWindow->getCustomAttribute("GLCONTEXT", (void*) &context);
 
 	mDevice = 0; //this value should be extracted from Ogre (using GLContext ?)
 	mTextureManager = new Ogre::Cuda::GLTextureManager;
+	mVertexBufferManager = new Ogre::Cuda::GLVertexBufferManager;
 }
 
 void GLRoot::init()
@@ -61,9 +62,9 @@ GLTexture::GLTexture(Ogre::TexturePtr& texture)
 
 void GLTexture::registerForCudaUse()
 {
-	cudaGraphicsGLRegisterImage(&mCudaRessource, mGLTextureId, GL_TEXTURE_2D, cudaGraphicsRegisterFlagsNone);
-	cudaMallocPitch(&mCudaLinearMemory, &mPitch, mTexture->getWidth() * sizeof(char) * 4, mTexture->getHeight());
-	cudaMemset(mCudaLinearMemory, 1, mPitch * mTexture->getHeight());
+	GLenum target = static_cast<Ogre::GLTexturePtr>(mTexture)->getGLTextureTarget();
+	cudaGraphicsGLRegisterImage(&mCudaRessource, mGLTextureId, target, cudaGraphicsRegisterFlagsNone);
+	allocate();
 }
 
 //GLTextureManager
@@ -77,4 +78,30 @@ void GLTextureManager::destroyTexture(Texture* texture)
 {
 	delete (GLTexture*)texture;
 	texture = NULL;
+}
+
+//GLVertexBuffer
+
+GLVertexBuffer::GLVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer)
+: VertexBuffer(vertexBuffer)
+{
+	mGLVertexBufferId = static_cast<Ogre::GLHardwareVertexBuffer*>(vertexBuffer.get())->getGLBufferId();
+}
+
+void GLVertexBuffer::registerForCudaUse()
+{
+	cudaGraphicsGLRegisterBuffer(&mCudaRessource, mGLVertexBufferId, cudaGraphicsRegisterFlagsNone);
+}
+
+//GLVertexBufferManager
+
+VertexBuffer* GLVertexBufferManager::createVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer)
+{
+	return new Ogre::Cuda::GLVertexBuffer(vertexBuffer);
+}
+
+void GLVertexBufferManager::destroyVertexBuffer(VertexBuffer* vertexBuffer)
+{
+	delete (GLVertexBuffer*)vertexBuffer;
+	vertexBuffer = NULL;
 }

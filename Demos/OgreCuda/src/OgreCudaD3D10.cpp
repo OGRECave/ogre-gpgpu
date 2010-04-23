@@ -34,11 +34,9 @@ using namespace Ogre::Cuda;
 D3D10Root::D3D10Root(Ogre::RenderWindow* renderWindow)
 : Root()
 {
-	void* data = NULL;	
-	renderWindow->getCustomAttribute("D3DDEVICE", &data);
-
-	mDevice = (ID3D10Device*) data;
-	mTextureManager = new Ogre::Cuda::D3D10TextureManager;
+	renderWindow->getCustomAttribute("D3DDEVICE", (void*) &mDevice);
+	mTextureManager      = new Ogre::Cuda::D3D10TextureManager;
+	mVertexBufferManager = NULL; //new Ogre::Cuda::D3D10VertexBufferManager;
 }
 
 void D3D10Root::init()
@@ -52,17 +50,13 @@ void D3D10Root::init()
 D3D10Texture::D3D10Texture(Ogre::TexturePtr& texture)
 : Texture(texture)
 {
-	mD3D10Texture = static_cast<Ogre::D3D10TexturePtr>(mTexture)->GetTex2D();
-	D3D10_TEXTURE2D_DESC desc;
-	mD3D10Texture->GetDesc(&desc);
-	mNbMipMaps = desc.MipLevels;
+	mD3D10Texture = static_cast<Ogre::D3D10TexturePtr>(mTexture)->getTextureResource();
 }
 
 void D3D10Texture::registerForCudaUse()
 { 
 	cudaGraphicsD3D10RegisterResource(&mCudaRessource, mD3D10Texture, cudaGraphicsRegisterFlagsNone);
-	cudaMallocPitch(&mCudaLinearMemory, &mPitch, mTexture->getWidth() * sizeof(char) * 4, mTexture->getHeight());
-	cudaMemset(mCudaLinearMemory, 1, mPitch * mTexture->getHeight());
+	allocate();
 }
 
 //D3D10TextureManager
@@ -76,4 +70,31 @@ void D3D10TextureManager::destroyTexture(Texture* texture)
 {
 	delete (D3D10Texture*)texture;
 	texture = NULL;
+}
+
+//D3D10VertexBuffer
+
+D3D10VertexBuffer::D3D10VertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer)
+: VertexBuffer(vertexBuffer)
+{
+	mD3D10VertexBuffer = NULL;
+	//mD3D10VertexBuffer = static_cast<Ogre::D3D10HardwareVertexBuffer*>(vertexBuffer.get())->getD3DVertexBuffer();
+}
+
+void D3D10VertexBuffer::registerForCudaUse()
+{
+	//cudaGraphicsD3D10RegisterResource(&mCudaRessource, (ID3D10Resource*)mD3D10VertexBuffer, cudaGraphicsRegisterFlagsNone);
+}
+
+//D3D10VertexBufferManager
+
+VertexBuffer* D3D10VertexBufferManager::createVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer)
+{
+	return NULL; //new Ogre::Cuda::D3D10VertexBuffer(vertexBuffer);
+}
+
+void D3D10VertexBufferManager::destroyVertexBuffer(VertexBuffer* vertexBuffer)
+{
+	delete (D3D10VertexBuffer*)vertexBuffer;
+	vertexBuffer = NULL;
 }

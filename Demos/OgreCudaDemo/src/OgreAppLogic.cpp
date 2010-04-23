@@ -7,8 +7,8 @@
 
 using namespace Ogre;
 
-extern "C" void cudaUpdate(void* deviceTexture, int width, int height, float t);
-extern "C" void checkCUDAError(const char *msg);
+extern "C" void cudaTextureUpdate(void* deviceTexture, int width, int height, float t);
+extern "C" void cudaMeshUpdate(void* deviceMesh, int width, int height, float t);
 
 OgreAppLogic::OgreAppLogic() 
 : mApplication(0)
@@ -20,6 +20,10 @@ OgreAppLogic::OgreAppLogic()
 	mOISListener.mParent = this;
 	mTotalTime = 0;
 	mOgreTexture.setNull();
+	mIsCudaEnabled = true;
+	mTimeUntilNextToggle = 0;
+	mCudaVertexBuffer = NULL;
+	mCudaVertexBufferRenderable = NULL;
 }
 
 OgreAppLogic::~OgreAppLogic()
@@ -56,11 +60,23 @@ bool OgreAppLogic::init(void)
 	int width  = 128;
 	int height = 128;
 	createCudaMaterial(width, height);
-	createCudaOverlay(width*4, height*4);
+	createCudaPlane(width, height);
 
 	//Create Ogre::Cuda::Texture	
 	mCudaTexture = mCudaRoot->getTextureManager()->createTexture(mOgreTexture);
 	mCudaTexture->registerForCudaUse();
+
+	//Test to ignore D3D10 (because VertexBuffer are not working)
+	if (mCudaRoot->getVertexBufferManager())
+	{
+		mCudaVertexBufferRenderable = new CudaVertexBufferRenderable(128, 128);	
+		Ogre::SceneNode* cudaNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("CudaMesh");
+		cudaNode->attachObject(mCudaVertexBufferRenderable);
+
+		//Create Ogre::Cuda::VertexBuffer
+		mCudaVertexBuffer = mCudaRoot->getVertexBufferManager()->createVertexBuffer(mCudaVertexBufferRenderable->getHardwareVertexBuffer());
+		mCudaVertexBuffer->registerForCudaUse();
+	}
 
 	return true;
 }
@@ -72,16 +88,23 @@ bool OgreAppLogic::preUpdate(Ogre::Real deltaTime)
 
 bool OgreAppLogic::update(Ogre::Real deltaTime)
 {
-	mTotalTime += deltaTime;
-	
-	if (mTotalTime < 30) //update cuda texture for 30s only
+	if (mIsCudaEnabled)
 	{
+		mTotalTime += deltaTime;
+
 		mCudaTexture->map();
-		Ogre::Vector2 dim = mCudaTexture->getDimensions(0, 0);
-		void* deviceTexture = mCudaTexture->getPointer(0, 0);
-		cudaUpdate(deviceTexture, (int)dim.x, (int)dim.y, mTotalTime);
-		mCudaTexture->update();
+		Ogre::Cuda::TextureDeviceHandle textureHandle = mCudaTexture->getDeviceHandle(0, 0);
+		cudaTextureUpdate(textureHandle.getPointer(), textureHandle.width, textureHandle.height, mTotalTime);		
+		mCudaTexture->update(textureHandle);
 		mCudaTexture->unmap();
+
+		if (mCudaVertexBuffer)
+		{
+			mCudaVertexBuffer->map();
+			void* deviceMesh = mCudaVertexBuffer->getPointer();
+			cudaMeshUpdate(deviceMesh, 128, 128, mTotalTime);
+			mCudaVertexBuffer->unmap();
+		}
 	}
 
 	bool result = processInputs(deltaTime);
@@ -93,6 +116,8 @@ void OgreAppLogic::shutdown(void)
 
 	mCudaTexture->unregister();
 	mCudaRoot->getTextureManager()->destroyTexture(mCudaTexture);
+	mCudaVertexBuffer->unregister();
+	mCudaRoot->getVertexBufferManager()->destroyVertexBuffer(mCudaVertexBuffer);
 	mCudaRoot->shutdown();
 	Ogre::Cuda::Root::destroyRoot(mCudaRoot);
 	mOgreTexture.setNull();
@@ -127,21 +152,25 @@ void OgreAppLogic::createCamera(void)
 {
 	mCamera = mSceneMgr->createCamera("Camera");
 	mCamera->setAutoAspectRatio(true);
+	mCamera->setPosition(Ogre::Vector3(0, 3, -2));
+	mCamera->lookAt(0, 0, 0);
+	mCamera->setNearClipDistance(0.1f);
+	mCamera->setFarClipDistance(10000.0);
 	mViewport->setCamera(mCamera);
 }
 
 void OgreAppLogic::createScene(void)
 {
 	mSceneMgr->setAmbientLight(ColourValue(0.5,0.5,0.5));
-	//mSceneMgr->setSkyBox(true, "Examples/Grid");
+	mSceneMgr->setSkyBox(true, "Examples/Grid");
 }
 
 //--------------------------------- update --------------------------------
 
 bool OgreAppLogic::processInputs(Ogre::Real deltaTime)
 {
-	const Degree ROT_SCALE = Degree(60.0f);
-	const Real MOVE_SCALE = 5000.0;
+	const Degree ROT_SCALE = Degree(100.0f);
+	const Real MOVE_SCALE = 5.0;
 	Vector3 translateVector(Vector3::ZERO);
 	Degree rotX(0);
 	Degree rotY(0);
@@ -179,6 +208,16 @@ bool OgreAppLogic::processInputs(Ogre::Real deltaTime)
 
 	if(keyboard->isKeyDown(OIS::KC_LEFT))
 		rotX += ROT_SCALE;					// Turn camea left
+
+	if (keyboard->isKeyDown(OIS::KC_SPACE) && mTimeUntilNextToggle <= 0)
+	{
+		mIsCudaEnabled = !mIsCudaEnabled;
+		mTimeUntilNextToggle = 0.2f;
+	}
+
+	if (mTimeUntilNextToggle >= 0)
+		mTimeUntilNextToggle -= deltaTime;
+
 
 	// mouse moves
 	const OIS::MouseState &ms = mouse->getMouseState();
@@ -229,19 +268,20 @@ bool OgreAppLogic::OISListener::keyReleased( const OIS::KeyEvent &arg )
 	return true;
 }
 
-void OgreAppLogic::createCudaOverlay(int width, int height)
+void OgreAppLogic::createCudaPlane(int width, int height)
 {
-	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
-	Ogre::Overlay* overlay = overlayManager.create("Cuda/Overlay");
+	//Create plane
+	Ogre::MeshManager::getSingleton().createPlane("CudaPlane", 
+		Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
+		Ogre::Plane(Ogre::Vector3::UNIT_Y, Ogre::Vector3::ZERO), 1, 1, 
+		4, 4, true, 1, 1, 1, Vector3::UNIT_Z);
+	
+	//Create entity
+	Ogre::Entity* planeEntity = mSceneMgr->createEntity("CudaGridPlane", "CudaPlane");
+	planeEntity->setMaterialName("CudaMaterial");
+	planeEntity->setRenderQueueGroup(RENDER_QUEUE_WORLD_GEOMETRY_1);
 
-	Ogre::PanelOverlayElement* panel = static_cast<Ogre::PanelOverlayElement*>(overlayManager.createOverlayElement("Panel", "Cuda/Panel"));
-	panel->setMetricsMode(Ogre::GMM_PIXELS);
-	panel->setMaterialName("CudaMaterial");
-	panel->setDimensions((Ogre::Real)width, (Ogre::Real)height);
-	panel->setPosition(0.0f, 0.0f);
-	overlay->add2D(panel);
-
-	overlay->show();
+	mSceneMgr->getRootSceneNode()->attachObject(planeEntity);
 }
 
 void OgreAppLogic::createCudaMaterial(int width, int height)
@@ -254,7 +294,7 @@ void OgreAppLogic::createCudaMaterial(int width, int height)
 		height, 
 		0, 
 		Ogre::PF_A8R8G8B8, 
-		Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE); //Ogre::HardwareBuffer::HBU_DISCARDABLE
+		Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 
 	//Create Ogre::Material
 	Ogre::MaterialPtr material = MaterialManager::getSingleton().create("CudaMaterial", 

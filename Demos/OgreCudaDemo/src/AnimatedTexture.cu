@@ -21,7 +21,7 @@
  * writes from the texture, hence why this texture was not mapped
  * as WriteDiscard.
  */
-__global__ void cuda_kernel_texture_2d(unsigned char* surface, int width, int height, size_t pitch, float t)
+__global__ void cudaKernelTexture2D(unsigned char* surface, int width, int height, size_t pitch, float t)
 {
 	int x = blockIdx.x*blockDim.x + threadIdx.x;
     int y = blockIdx.y*blockDim.y + threadIdx.y;
@@ -39,32 +39,18 @@ __global__ void cuda_kernel_texture_2d(unsigned char* surface, int width, int he
 	float value_x = 0.5f + 0.5f*cos(t + 10.0f*( (2.0f*x)/width  - 1.0f ) );
 	float value_y = 0.5f + 0.5f*cos(t + 10.0f*( (2.0f*y)/height - 1.0f ) );
 
+	// Color : DirectX BGRA, OpenGL RGBA
 	pixel[0] = 255*(0.5f + 0.5f*cos(t));                          // blue
 	pixel[1] = 255*(0.5*pixel[1]/255.0 + 0.5*pow(value_y, 3.0f)); // green
 	pixel[2] = 255*(0.5*pixel[0]/255.0 + 0.5*pow(value_x, 3.0f)); // red
 	pixel[3] = 255;                                               // alpha	
-/*
-	pixel[0] = 0;   // blue
-	pixel[1] = 0;   // green
-	pixel[2] = 255; // red
-	pixel[3] = 255; // alpha	
-*/
 }
 
-extern "C" void cudaUpdate(void* deviceTexture, int width, int height, float t)
+extern "C" void cudaTextureUpdate(void* deviceTexture, int width, int height, float t)
 {
     dim3 Db = dim3(16, 16); // block dimensions are fixed to be 256 threads
     dim3 Dg = dim3((width+Db.x-1)/Db.x, (height+Db.y-1)/Db.y);
 	
 	size_t pitch = width*4;
-    cuda_kernel_texture_2d<<<Dg,Db>>>((unsigned char*)deviceTexture, width, height, pitch, t);
-}
-
-extern "C" void checkCUDAError(const char *msg)
-{
-    cudaError_t err = cudaGetLastError();
-    if(cudaSuccess != err) 
-    {
-        fprintf(stderr, "Cuda error: %s: %s.\n", msg, cudaGetErrorString(err));
-    }                         
+    cudaKernelTexture2D<<<Dg,Db>>>((unsigned char*)deviceTexture, width, height, pitch, t);
 }

@@ -33,8 +33,17 @@ namespace Ogre
 {
 	namespace Cuda
 	{
+		class Texture;
 		class TextureManager;
+		class VertexBufferManager;
+		class CudaRessource;		
 		struct DeviceProperties;
+		
+		enum RessourceType
+		{
+			TEXTURE_RESSOURCE,
+			VERTEXBUFFER_RESSOURCE
+		};
 
 		class Root
 		{
@@ -43,17 +52,24 @@ namespace Ogre
 				void shutdown();
 				void wait();    //synchronize Cuda thread with calling thread (wait for last Cuda call completion)
 
+				TextureManager* getTextureManager();           //return TextureManager to create Ogre::Cuda::Texture
+				VertexBufferManager* getVertexBufferManager(); //return VertexBufferManager to create/destroy Ogre::Cuda::VertexBuffer
+
+				void map(std::vector<Ogre::Cuda::CudaRessource*> ressources);   //efficient way to map multiple CudaRessource in one call
+				void unmap(std::vector<Ogre::Cuda::CudaRessource*> ressources); //efficient way to unmap multiple CudaRessource in one call
+
 				bool isCudaStatusOK();             //check cuda status and save it
 				std::string getErrorMessage();     //return a message corresponding to the last call of isCudaStatusOK()
-				static std::string getLastError(); //check cuda status and return corresponding message
+				
+				//Static methods :
 
-				TextureManager* getTextureManager();
+				static std::string getLastError(); //check cuda status and return corresponding message
 
 				static Root* createRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* renderSystem);
 				static void destroyRoot(Root* root);
 
-				static int getDeviceCount(); //return nb device compatible with Cuda on this machine
-				static DeviceProperties getDeviceProperties(int index);
+				static int getDeviceCount();                            //return how many devices are compatible with Cuda on this machine
+				static DeviceProperties getDeviceProperties(int index); //return properties of the selected device
 
 				static int getCudaRuntimeVersion();
 				static int getVideoDriverVersion();
@@ -62,48 +78,101 @@ namespace Ogre
 				Root();
 				virtual ~Root();
 
-				Ogre::Cuda::TextureManager* mTextureManager;
-				cudaError_t mLastCudaError;
+				Ogre::Cuda::TextureManager*      mTextureManager;
+				Ogre::Cuda::VertexBufferManager* mVertexBufferManager;
+				cudaError_t                      mLastCudaError;
+				cudaStream_t                     mCudaStream;
 		};
 
-		class Texture
+		class CudaRessource
+		{
+			friend class Root;	
+
+			public:
+				CudaRessource();
+
+				virtual void registerForCudaUse() = 0;
+				virtual void unregister();
+
+				virtual void map();
+				virtual void unmap();
+
+				virtual Ogre::Cuda::RessourceType getType() = 0;
+
+			protected:
+				struct cudaGraphicsResource*        mCudaRessource;
+				cudaStream_t 	                    mCudaStream;
+		};
+
+		class TextureDeviceHandle
+		{
+			friend class Ogre::Cuda::Texture;
+
+			public:
+				TextureDeviceHandle(size_t width, size_t height, size_t pitch, void* linearMemory);
+				void* getPointer();
+
+				size_t width;
+				size_t height;
+				size_t pitch;
+				void* linearMemory;
+
+			protected:
+				cudaArray* mCudaArray;
+		};
+
+		class Texture : public CudaRessource
 		{
 			friend class TextureManager;	
 
 			public:
 				virtual void registerForCudaUse() = 0;
 				virtual void unregister();
+				void update(TextureDeviceHandle& mem);
 
-				virtual void map();
-				virtual void unmap();
-				virtual void update();
-				virtual void* getPointer(unsigned int face, unsigned int level);
-				virtual Ogre::Vector2 getDimensions(unsigned int face, unsigned int level);
+				TextureDeviceHandle getDeviceHandle(unsigned int face, unsigned int mipmap);
+				Ogre::Vector2 getDimensions(unsigned int face, unsigned int mipmap);
+
+				virtual Ogre::Cuda::RessourceType getType();
 
 			protected:
 				Texture(Ogre::TexturePtr texture);
+				void allocate();
+				unsigned int getIndex(unsigned int face, unsigned int mipmap);
 
-				Ogre::TexturePtr mTexture;
-				struct cudaGraphicsResource* mCudaRessource;
-				void*                        mCudaLinearMemory;
-				cudaStream_t 	             mCudaStream;
-				cudaArray*                   mCudaArray;
-				size_t                       mPitch;
+				Ogre::TexturePtr                 mTexture;
+				std::vector<TextureDeviceHandle> mDevicePtrs;
+		};
+
+		class VertexBuffer : public CudaRessource
+		{
+			friend class VertexBufferManager;
+
+			public:
+				virtual void registerForCudaUse() = 0;
+				void* getPointer();
+
+				virtual Ogre::Cuda::RessourceType getType();
+
+			protected:
+				VertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
+
+				Ogre::HardwareVertexBufferSharedPtr mVertexBuffer;
+				cudaArray*                          mCudaArray;
 		};
 
 		class TextureManager
 		{
 			public:
-				TextureManager();
-
 				virtual Texture* createTexture(Ogre::TexturePtr texture) = 0;
-				virtual void destroyTexture(Texture* texture) = 0;
+				virtual void destroyTexture(Texture* texture) = 0;				
+		};
 
-				void map(std::vector<Ogre::Cuda::Texture*> textures);
-				void unmap(std::vector<Ogre::Cuda::Texture*> textures);
-
-			protected:
-				cudaStream_t mCudaStream;
+		class VertexBufferManager
+		{
+			public:
+				virtual VertexBuffer* createVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer) = 0;
+				virtual void destroyVertexBuffer(VertexBuffer* vertexBuffer) = 0;
 		};
 
 		struct DeviceProperties

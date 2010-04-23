@@ -26,6 +26,7 @@
 
 #include <OgreD3D10RenderSystem.h>
 #include <OgreD3D10Texture.h>
+#include <OgreD3D10HardwareVertexBuffer.h>
 
 namespace Ogre
 {
@@ -49,8 +50,17 @@ namespace Ogre
 				virtual void registerForCudaUse();
 
 			protected:
-				unsigned int mNbMipMaps;
-				ID3D10Texture2D* mD3D10Texture;
+				ID3D10Resource* mD3D10Texture;
+		};
+
+		class D3D10VertexBuffer : public VertexBuffer
+		{
+			public:
+				D3D10VertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
+				virtual void registerForCudaUse();
+
+			protected:
+				ID3D10Buffer* mD3D10VertexBuffer;
 		};
 
 		class D3D10TextureManager : public TextureManager
@@ -58,6 +68,13 @@ namespace Ogre
 			public:
 				virtual Texture* createTexture(Ogre::TexturePtr texture);
 				virtual void destroyTexture(Texture* texture);
+		};
+
+		class D3D10VertexBufferManager : public VertexBufferManager
+		{
+			public:
+				virtual VertexBuffer* createVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
+				virtual void destroyVertexBuffer(VertexBuffer* vertexBuffer);
 		};
 	}
 }

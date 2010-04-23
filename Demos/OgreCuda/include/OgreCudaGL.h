@@ -26,6 +26,7 @@
 
 #include <OgreGLRenderSystem.h>
 #include <OgreGLTexture.h>
+#include <OgreGLHardwareVertexBuffer.h>
 
 namespace Ogre
 {
@@ -52,11 +53,28 @@ namespace Ogre
 				GLuint mGLTextureId;
 		};
 
+		class GLVertexBuffer : public VertexBuffer
+		{
+			public:
+				GLVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
+				virtual void registerForCudaUse();
+
+			protected:
+				GLuint mGLVertexBufferId;
+		};
+
 		class GLTextureManager : public TextureManager
 		{
 			public:
 				virtual Texture* createTexture(Ogre::TexturePtr texture);
 				virtual void destroyTexture(Texture* texture);
+		};
+
+		class GLVertexBufferManager : public VertexBufferManager
+		{
+			public:
+				virtual VertexBuffer* createVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
+				virtual void destroyVertexBuffer(VertexBuffer* vertexBuffer);
 		};
 	}
 }

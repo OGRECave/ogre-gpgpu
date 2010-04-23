@@ -6,6 +6,7 @@
 #include <OIS/OIS.h>
 
 #include <OgreCuda.h>
+#include "CudaVertexBufferRenderable.h"
 
 class OgreApp;
 class StatsFrameListener;
@@ -53,11 +54,17 @@ protected:
 
 	Ogre::Cuda::Root* mCudaRoot;
 	Ogre::Cuda::Texture* mCudaTexture;
+	Ogre::Cuda::VertexBuffer* mCudaVertexBuffer;
+
 	Ogre::TexturePtr mOgreTexture;
+	CudaVertexBufferRenderable* mCudaVertexBufferRenderable;
+
 	void createCudaMaterial(int width, int height);
-	void createCudaOverlay(int width, int height);
+	void createCudaPlane(int width, int height);
 
 	Ogre::Real mTotalTime;
+	bool mIsCudaEnabled;
+	Ogre::Real mTimeUntilNextToggle;
 
 	StatsFrameListener *mStatsFrameListener;
 
