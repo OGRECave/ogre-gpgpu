@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="OgreCuda"
-	ProjectGUID="{D2B63832-4C76-4B72-A371-0EE8AB71AE53}"
-	RootNamespace="OgreCuda"
+	Name="OgreOpenCL"
+	ProjectGUID="{DAE57391-62F7-401C-BC8F-EDE159414AC7}"
+	RootNamespace="OgreOpenCL"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -20,7 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\OgreCuda.vsprops;..\..\Ogre.vsprops"
+			InheritedPropertySheets=".\OgreOpenCL.vsprops;..\..\Ogre.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -42,9 +42,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -81,7 +82,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			InheritedPropertySheets=".\OgreCuda.vsprops;..\..\Ogre.vsprops"
+			InheritedPropertySheets=".\OgreOpenCL.vsprops;..\..\Ogre.vsprops"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -104,8 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=""
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -148,26 +148,26 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\OgreCuda.cpp"
+				RelativePath="..\src\OgreOpenCL.cpp"
 				>
 			</File>
-			<Filter
-				Name="DX"
-				>
-				<File
-					RelativePath="..\src\OgreCudaD3D10.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\OgreCudaD3D9.cpp"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="GL"
 				>
 				<File
-					RelativePath="..\src\OgreCudaGL.cpp"
+					RelativePath="..\src\OgreOpenCLGL.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="DX"
+				>
+				<File
+					RelativePath="..\src\OgreOpenCLDX10.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\OgreOpenCLDX9.cpp"
 					>
 				</File>
 			</Filter>
@@ -178,18 +178,18 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\include\OgreCuda.h"
+				RelativePath="..\include\OgreOpenCL.h"
 				>
 			</File>
 			<Filter
 				Name="DX"
 				>
 				<File
-					RelativePath="..\include\OgreCudaD3D10.h"
+					RelativePath="..\include\OgreOpenCLDX10.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\OgreCudaD3D9.h"
+					RelativePath="..\include\OgreOpenCLDX9.h"
 					>
 				</File>
 			</Filter>
@@ -197,7 +197,7 @@
 				Name="GL"
 				>
 				<File
-					RelativePath="..\include\OgreCudaGL.h"
+					RelativePath="..\include\OgreOpenCLGL.h"
 					>
 				</File>
 			</Filter>

@@ -20,59 +20,44 @@
 	THE SOFTWARE.
 */
 
-#pragma once
+#include "OgreOpenCL.h"
 
-#include "OgreCuda.h"
-
-#include <OgreGLRenderSystem.h>
-#include <OgreGLTexture.h>
-#include <OgreGLHardwareVertexBuffer.h>
+#include <OgreD3D9RenderSystem.h>
+#include <OgreD3D9Texture.h>
+#include <OgreD3D9HardwareVertexBuffer.h>
 
 namespace Ogre
 {
-	namespace Cuda
+	namespace OpenCL
 	{
-		class GLRoot : public Root
+		class D3D9Root : public Root
 		{
 			public:
-				GLRoot(Ogre::RenderWindow* renderWindow);
-				virtual void init();
+				D3D9Root(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* renderSystem);
+				virtual bool init();
 
 			protected:
-				int mDevice;
+				LPDIRECT3DDEVICE9 mDevice;
+				Ogre::GPUVendor   mGPUVendor;
 		};
 
-		class GLTexture : public Texture
+		class D3D9VertexBuffer : public VertexBuffer
 		{
 			public:
-				GLTexture(Ogre::TexturePtr& texture);
+				D3D9VertexBuffer(Root* root, Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
 
-				virtual void registerForCudaUse();
+				virtual bool registerForCL();
+				void* getPointer();
 
-			protected:
-				GLuint mGLTextureId;
+				virtual bool map();
+				virtual bool unmap();
 		};
 
-		class GLVertexBuffer : public VertexBuffer
+		class D3D9VertexBufferManager : public VertexBufferManager
 		{
 			public:
-				GLVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
-				virtual void registerForCudaUse();
+				D3D9VertexBufferManager(Root* root);
 
-			protected:
-				GLuint mGLVertexBufferId;
-		};
-
-		class GLTextureManager : public TextureManager
-		{
-			public:
-				virtual Texture* createTexture(Ogre::TexturePtr texture);
-				virtual void destroyTexture(Texture* texture);
-		};
-
-		class GLVertexBufferManager : public VertexBufferManager
-		{
-			public:
 				virtual VertexBuffer* createVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
 				virtual void destroyVertexBuffer(VertexBuffer* vertexBuffer);
 		};

@@ -42,7 +42,7 @@ D3D9Root::D3D9Root(Ogre::RenderWindow* renderWindow)
 void D3D9Root::init()
 {
 	cudaD3D9SetDirect3DDevice(mDevice);
-	wait();
+	synchronize();
 }
 
 //D3D9Texture

@@ -35,7 +35,7 @@
 
 using namespace Ogre::Cuda;
 
-GLRoot::GLRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* renderSystem)
+GLRoot::GLRoot(Ogre::RenderWindow* renderWindow)
 : Root()
 {
 	Ogre::GLContext* context = NULL;
@@ -49,7 +49,7 @@ GLRoot::GLRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* renderSyste
 void GLRoot::init()
 {
 	cudaGLSetGLDevice(mDevice);
-	wait();
+	synchronize();
 }
 
 //CudaGLTexture

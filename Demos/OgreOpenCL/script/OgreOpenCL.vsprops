@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="OgreOpenCL"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(OgreOpenCL)&quot;;&quot;$(OPENCL_SRC)\inc&quot;;&quot;$(OGRE_HOME)\include\OGRE\RenderSystems\Direct3D9&quot;;&quot;$(OGRE_HOME)\include\OGRE\RenderSystems\Direct3D10&quot;;&quot;$(OGRE_HOME)\include\OGRE\RenderSystems\GL&quot;"
+	/>
+	<UserMacro
+		Name="OgreOpenCL"
+		Value="$(SolutionDir)\OgreOpenCL\include"
+	/>
+	<UserMacro
+		Name="OPENCL_SRC"
+		Value="C:\ProgramData\NVIDIA Corporation\NVIDIA GPU Computing SDK\OpenCL\common"
+	/>
+</VisualStudioPropertySheet>

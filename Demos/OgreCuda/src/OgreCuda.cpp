@@ -49,7 +49,7 @@ void Root::shutdown()
 	cudaThreadExit();
 }
 
-void Root::wait()
+void Root::synchronize()
 {
 	cudaThreadSynchronize();
 }
@@ -64,7 +64,7 @@ VertexBufferManager* Root::getVertexBufferManager()
 	return mVertexBufferManager;
 }
 
-void Root::map(std::vector<Ogre::Cuda::CudaRessource*> ressources)
+void Root::map(std::vector<Ogre::Cuda::Ressource*> ressources)
 {
 	mCudaStream = NULL;
 	std::vector<struct cudaGraphicsResource*> cudaRessources;
@@ -73,7 +73,7 @@ void Root::map(std::vector<Ogre::Cuda::CudaRessource*> ressources)
 	cudaGraphicsMapResources(cudaRessources.size(), &(cudaRessources[0]), mCudaStream);
 }
 
-void Root::unmap(std::vector<Ogre::Cuda::CudaRessource*> ressources)
+void Root::unmap(std::vector<Ogre::Cuda::Ressource*> ressources)
 {
 	std::vector<struct cudaGraphicsResource*> cudaRessources;
 	for (unsigned int i=0; i<ressources.size(); ++i)
@@ -102,7 +102,7 @@ Root* Root::createRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* ren
 	std::string renderSystemName = renderSystem->getName();
 
 	if (renderSystemName == "OpenGL Rendering Subsystem")
-		return new Ogre::Cuda::GLRoot(renderWindow, renderSystem);
+		return new Ogre::Cuda::GLRoot(renderWindow);
 	else if (renderSystemName == "Direct3D9 Rendering Subsystem")
 		return new Ogre::Cuda::D3D9Root(renderWindow);
 	else if (renderSystemName == "Direct3D10 Rendering Subsystem")
@@ -292,7 +292,7 @@ void Texture::allocate()
 
 void Texture::unregister()
 {
-	CudaRessource::unregister();
+	Ressource::unregister();
 	
 	unsigned int index = 0;
 	for (unsigned int i=0; i<mTexture->getNumFaces(); ++i)
@@ -325,25 +325,25 @@ Ogre::Cuda::RessourceType VertexBuffer::getType()
 	return Ogre::Cuda::VERTEXBUFFER_RESSOURCE;
 }
 
-//CudaRessource
+//Ressource
 
-CudaRessource::CudaRessource()
+Ressource::Ressource()
 {
 	mCudaRessource    = NULL;
 	mCudaStream       = NULL;
 }
 
-void CudaRessource::unregister()
+void Ressource::unregister()
 {
 	cudaGraphicsUnregisterResource(mCudaRessource);
 }
 
-void CudaRessource::map()
+void Ressource::map()
 {
 	cudaGraphicsMapResources(1, &mCudaRessource, mCudaStream);
 }
 
-void CudaRessource::unmap()
+void Ressource::unmap()
 {	
 	cudaGraphicsUnmapResources(1, &mCudaRessource, mCudaStream);
 }

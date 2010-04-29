@@ -33,10 +33,10 @@ namespace Ogre
 {
 	namespace Cuda
 	{
+		class Ressource;
 		class Texture;
 		class TextureManager;
-		class VertexBufferManager;
-		class CudaRessource;		
+		class VertexBufferManager;		
 		struct DeviceProperties;
 		
 		enum RessourceType
@@ -50,13 +50,13 @@ namespace Ogre
 			public:
 				virtual void init() = 0;
 				void shutdown();
-				void wait();    //synchronize Cuda thread with calling thread (wait for last Cuda call completion)
+				void synchronize();    //synchronize Cuda thread with calling thread (wait for last Cuda call completion)
 
 				TextureManager* getTextureManager();           //return TextureManager to create Ogre::Cuda::Texture
 				VertexBufferManager* getVertexBufferManager(); //return VertexBufferManager to create/destroy Ogre::Cuda::VertexBuffer
 
-				void map(std::vector<Ogre::Cuda::CudaRessource*> ressources);   //efficient way to map multiple CudaRessource in one call
-				void unmap(std::vector<Ogre::Cuda::CudaRessource*> ressources); //efficient way to unmap multiple CudaRessource in one call
+				void map(std::vector<Ogre::Cuda::Ressource*> ressources);   //efficient way to map multiple Ressource in one call
+				void unmap(std::vector<Ogre::Cuda::Ressource*> ressources); //efficient way to unmap multiple Ressource in one call
 
 				bool isCudaStatusOK();             //check cuda status and save it
 				std::string getErrorMessage();     //return a message corresponding to the last call of isCudaStatusOK()
@@ -84,12 +84,12 @@ namespace Ogre
 				cudaStream_t                     mCudaStream;
 		};
 
-		class CudaRessource
+		class Ressource
 		{
 			friend class Root;	
 
 			public:
-				CudaRessource();
+				Ressource();
 
 				virtual void registerForCudaUse() = 0;
 				virtual void unregister();
@@ -121,7 +121,7 @@ namespace Ogre
 				cudaArray* mCudaArray;
 		};
 
-		class Texture : public CudaRessource
+		class Texture : public Ressource
 		{
 			friend class TextureManager;	
 
@@ -144,7 +144,7 @@ namespace Ogre
 				std::vector<TextureDeviceHandle> mDevicePtrs;
 		};
 
-		class VertexBuffer : public CudaRessource
+		class VertexBuffer : public Ressource
 		{
 			friend class VertexBufferManager;
 

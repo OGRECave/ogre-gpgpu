@@ -10,6 +10,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreCudaDemo", "OgreCudaDem
 		{D2B63832-4C76-4B72-A371-0EE8AB71AE53} = {D2B63832-4C76-4B72-A371-0EE8AB71AE53}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreOpenCL", "OgreOpenCL\script\OgreOpenCL.vcproj", "{DAE57391-62F7-401C-BC8F-EDE159414AC7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreOpenCLDemo", "OgreOpenCLDemo\script\OgreOpenCLDemo.vcproj", "{918F17B4-2496-4665-BBD8-0E67B7D543A6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DAE57391-62F7-401C-BC8F-EDE159414AC7} = {DAE57391-62F7-401C-BC8F-EDE159414AC7}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -28,6 +35,14 @@ Global
 		{458AC36D-5111-4450-BCCC-B97D84081903}.Debug|Win32.Build.0 = Debug|Win32
 		{458AC36D-5111-4450-BCCC-B97D84081903}.Release|Win32.ActiveCfg = Release|Win32
 		{458AC36D-5111-4450-BCCC-B97D84081903}.Release|Win32.Build.0 = Release|Win32
+		{DAE57391-62F7-401C-BC8F-EDE159414AC7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DAE57391-62F7-401C-BC8F-EDE159414AC7}.Debug|Win32.Build.0 = Debug|Win32
+		{DAE57391-62F7-401C-BC8F-EDE159414AC7}.Release|Win32.ActiveCfg = Release|Win32
+		{DAE57391-62F7-401C-BC8F-EDE159414AC7}.Release|Win32.Build.0 = Release|Win32
+		{918F17B4-2496-4665-BBD8-0E67B7D543A6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{918F17B4-2496-4665-BBD8-0E67B7D543A6}.Debug|Win32.Build.0 = Debug|Win32
+		{918F17B4-2496-4665-BBD8-0E67B7D543A6}.Release|Win32.ActiveCfg = Release|Win32
+		{918F17B4-2496-4665-BBD8-0E67B7D543A6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -42,7 +42,7 @@ D3D10Root::D3D10Root(Ogre::RenderWindow* renderWindow)
 void D3D10Root::init()
 {
 	cudaD3D10SetDirect3DDevice(mDevice);
-	wait();
+	synchronize();
 }
 
 //CudaD3D10Texture

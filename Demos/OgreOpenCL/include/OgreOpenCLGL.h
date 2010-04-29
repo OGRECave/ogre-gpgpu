@@ -20,59 +20,39 @@
 	THE SOFTWARE.
 */
 
-#pragma once
-
-#include "OgreCuda.h"
-
-#include <OgreGLRenderSystem.h>
-#include <OgreGLTexture.h>
-#include <OgreGLHardwareVertexBuffer.h>
+#include "OgreOpenCL.h"
 
 namespace Ogre
 {
-	namespace Cuda
+	namespace OpenCL
 	{
 		class GLRoot : public Root
 		{
 			public:
 				GLRoot(Ogre::RenderWindow* renderWindow);
-				virtual void init();
+				virtual bool init();
 
 			protected:
 				int mDevice;
 		};
 
-		class GLTexture : public Texture
-		{
-			public:
-				GLTexture(Ogre::TexturePtr& texture);
-
-				virtual void registerForCudaUse();
-
-			protected:
-				GLuint mGLTextureId;
-		};
-
 		class GLVertexBuffer : public VertexBuffer
 		{
 			public:
-				GLVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
-				virtual void registerForCudaUse();
+				GLVertexBuffer(Root* root, Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
 
-			protected:
-				GLuint mGLVertexBufferId;
-		};
+				virtual bool registerForCL();
+				void* getPointer();
 
-		class GLTextureManager : public TextureManager
-		{
-			public:
-				virtual Texture* createTexture(Ogre::TexturePtr texture);
-				virtual void destroyTexture(Texture* texture);
+				virtual bool map();
+				virtual bool unmap();
 		};
 
 		class GLVertexBufferManager : public VertexBufferManager
 		{
 			public:
+				GLVertexBufferManager(Root* root);
+
 				virtual VertexBuffer* createVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer);
 				virtual void destroyVertexBuffer(VertexBuffer* vertexBuffer);
 		};
