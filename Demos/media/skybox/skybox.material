@@ -1,0 +1,17 @@
+material Examples/Grid
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			texture_unit
+			{
+				cubic_texture grid.jpg separateUV
+				tex_address_mode clamp
+			}
+		}
+	}
+}

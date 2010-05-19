@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="prepare bin folder"
+	ProjectGUID="{A6B91A97-D318-4270-BF43-297A091BE43D}"
+	RootNamespace="prepare"
+	TargetFrameworkVersion="196613"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="10"
+			InheritedPropertySheets="Ogre.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\cg.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\cg.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\OgreMain_d.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\OgreMain_d.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\OIS_d.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\OIS_d.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\RenderSystem_Direct3D9_d.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\RenderSystem_Direct3D9_d.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\RenderSystem_Direct3D10_d.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\RenderSystem_Direct3D10_d.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\RenderSystem_GL_d.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\RenderSystem_GL_d.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\Plugin_CgProgramManager_d.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\Plugin_CgProgramManager_d.dll"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="10"
+			InheritedPropertySheets="Ogre.vsprops"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\cg.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\cg.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\OgreMain.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\OgreMain.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\OIS.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\OIS.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\RenderSystem_Direct3D9.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\RenderSystem_Direct3D9.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\RenderSystem_Direct3D10.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\RenderSystem_Direct3D10.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\RenderSystem_GL.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\RenderSystem_GL.dll&#x0D;&#x0A;copy /y $(OGRE_HOME)\bin\$(ConfigurationName)\Plugin_CgProgramManager.dll $(SolutionDir)\bin\$(PlatformName)\$(ConfigurationName)\Plugin_CgProgramManager.dll&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

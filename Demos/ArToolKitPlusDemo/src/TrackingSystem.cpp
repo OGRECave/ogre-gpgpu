@@ -21,8 +21,8 @@ Marker::Marker(const Ogre::Matrix4& _trans, int _id)
 	trans = _trans;
 }
 
-std::string TrackingSystem::configFilename      = "config.cfg";
-std::string TrackingSystem::calibrationFilename = "pgr.cal";
+std::string TrackingSystem::configFilename      = "ar_config.cfg";
+std::string TrackingSystem::calibrationFilename = "ar_calib.cal";
 bool TrackingSystem::isUsingFullResImage        = true;
 bool TrackingSystem::isUsingHistory             = true;
 bool TrackingSystem::isUsingAutoThreshold       = true;

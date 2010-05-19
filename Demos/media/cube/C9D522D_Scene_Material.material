@@ -1,0 +1,18 @@
+material C9D522D_Scene_Material
+{
+	technique
+	{
+		pass
+		{
+			scene_blend one zero
+			// Texture unit 0
+			texture_unit
+			{
+				texture BCE6A2CE_noIcon.png 2d
+				tex_coord_set 0
+				filtering trilinear
+				colour_op modulate
+			}
+		}
+	}
+}
