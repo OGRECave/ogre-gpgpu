@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="OgreCanvasV8"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(V8_SRC)\include&quot;;&quot;$(OgreCanvasV8)&quot;"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="v8.lib Ws2_32.lib Winmm.lib"
+		AdditionalLibraryDirectories="$(V8_SRC)\lib\$(ConfigurationName)"
+	/>
+	<UserMacro
+		Name="V8_SRC"
+		Value="$(SolutionDir)\Dependencies\v8"
+	/>
+	<UserMacro
+		Name="OgreCanvasV8"
+		Value="$(SolutionDir)\OgreCanvasV8\include"
+	/>
+</VisualStudioPropertySheet>

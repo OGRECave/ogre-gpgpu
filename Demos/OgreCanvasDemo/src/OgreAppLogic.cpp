@@ -1,22 +1,11 @@
 #include "OgreAppLogic.h"
 #include "OgreApp.h"
-#include <Ogre.h>
-#include <OgrePanelOverlayElement.h>
+#include <Ogre/Ogre.h>
+#include <Ogre/OgrePanelOverlayElement.h>
 
 #include "StatsFrameListener.h"
-#include <OgreGLHardwareVertexBuffer.h>
-#include <OgreD3D9HardwareVertexBuffer.h>
-#include <OgreRenderSystemCapabilitiesManager.h>
 
 using namespace Ogre;
-
-#include <oclUtils.h>
-
-const unsigned int mesh_width = 256;
-const unsigned int mesh_height = 256;
-size_t szGlobalWorkSize[] = {mesh_width, mesh_height};
-cl_kernel ckKernel;
-cl_program cpProgram;
 
 OgreAppLogic::OgreAppLogic() 
 : mApplication(0)
@@ -25,11 +14,10 @@ OgreAppLogic::OgreAppLogic()
 	mSceneMgr		= 0;
 	mViewport		= 0;
 	mStatsFrameListener = 0;
+	mCanvasTexture = 0;
 	mOISListener.mParent = this;
-	mTotalTime = 0;
-	mIsOpenCLEnabled = true;
-	mTimeUntilNextToggle = 0;
-	mCustomVertexBufferRenderable = NULL;
+	mCanvasWidth  = 640;
+	mCanvasHeight = 480;
 }
 
 OgreAppLogic::~OgreAppLogic()
@@ -44,8 +32,6 @@ bool OgreAppLogic::preInit(const Ogre::StringVector &commandArgs)
 // postAppInit
 bool OgreAppLogic::init(void)
 {
-	cl_int error;
-
 	createSceneManager();
 	createViewport();
 	createCamera();
@@ -58,37 +44,47 @@ bool OgreAppLogic::init(void)
 	mApplication->getKeyboard()->setEventCallback(&mOISListener);
 	mApplication->getMouse()->setEventCallback(&mOISListener);
 
-	mCustomVertexBufferRenderable = new CustomVertexBufferRenderable(256, 256);	
-	Ogre::SceneNode* clNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("OpenCLMesh");
-	clNode->attachObject(mCustomVertexBufferRenderable);
+	mCanvasTexture = new Ogre::Canvas::Texture("Canvas", mCanvasWidth, mCanvasHeight);
+	mCanvasTexture->createMaterial();
 
-	mCLRoot = Ogre::OpenCL::Root::createRoot(mApplication->getRenderWindow(), mApplication->getOgreRoot()->getRenderSystem());
-	mCLRoot->init();
-
-	// load program source
-	size_t program_length;
-	char *programSource = oclLoadProgSource("C:\\AnimatedTexture.cl", "", &program_length);
-	
-	// create the program
-	cpProgram = clCreateProgramWithSource(*mCLRoot->getContext(), 1, (const char**) &programSource, &program_length, &error);
-
-	// build the program
-	error = clBuildProgram(cpProgram, 0, NULL, "-cl-fast-relaxed-math", NULL, NULL);
-
-	// create the kernel
-	ckKernel = clCreateKernel(cpProgram, "sine_wave", &error);
-
-	// create vbo
-	Ogre::HardwareVertexBufferSharedPtr vertexBuffer = mCustomVertexBufferRenderable->getHardwareVertexBuffer();
-	mVertexBuffer = mCLRoot->getVertexBufferManager()->createVertexBuffer(vertexBuffer);
-	mVertexBuffer->registerForCL();
-
-	// set the args values 
-	error  = clSetKernelArg(ckKernel, 0, sizeof(cl_mem), (void *) mVertexBuffer->getPointer());
-	error |= clSetKernelArg(ckKernel, 1, sizeof(unsigned int), &mesh_width);
-	error |= clSetKernelArg(ckKernel, 2, sizeof(unsigned int), &mesh_height);
+	createCanvasOverlay();
+	drawCanvas();
 
 	return true;
+}
+
+void OgreAppLogic::createCanvasOverlay()
+{
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+	Ogre::Overlay* overlay = overlayManager.create("Canvas/Overlay");
+
+	Ogre::PanelOverlayElement* panel = static_cast<Ogre::PanelOverlayElement*>(overlayManager.createOverlayElement("Panel", "Canvas/Panel"));
+	panel->setMetricsMode(Ogre::GMM_PIXELS);
+	panel->setMaterialName("Canvas");
+	panel->setDimensions((Ogre::Real)mCanvasWidth, (Ogre::Real)mCanvasHeight);
+	panel->setPosition(0, 0);
+	overlay->add2D(panel);
+
+	overlay->show();
+}
+
+void OgreAppLogic::drawCanvas()
+{
+	Ogre::Canvas::Context* ctx = mCanvasTexture->getContext();
+	
+	ctx->fillStyle(Ogre::ColourValue::White);
+	ctx->fillRect(0, 0, 200, 300);
+
+	for (float i=0; i<6; i++)
+	{
+		for (float j=0; j<6; j++)
+		{					
+			Ogre::ColourValue color((float)(255-42.5*i)/255.0f, (float)(255-42.5*j)/255.0f, 0.0f, 1.0f);
+			ctx->fillStyle(color);
+			ctx->fillRect(j*25,i*25,25,25);
+		}
+	}
+	mCanvasTexture->uploadTexture();
 }
 
 bool OgreAppLogic::preUpdate(Ogre::Real deltaTime)
@@ -98,34 +94,13 @@ bool OgreAppLogic::preUpdate(Ogre::Real deltaTime)
 
 bool OgreAppLogic::update(Ogre::Real deltaTime)
 {
-	if (mIsOpenCLEnabled)
-	{
-		mTotalTime += deltaTime;
-		cl_int ciErrNum;
-
-		mVertexBuffer->map();
-
-		// Set arg 3 and execute the kernel
-		ciErrNum = clSetKernelArg(ckKernel, 3, sizeof(float), &mTotalTime);
-
-		ciErrNum = clEnqueueNDRangeKernel(*mCLRoot->getCommandQueue(), ckKernel, 2, NULL, szGlobalWorkSize, NULL, 0,0,0 );
-
-		mVertexBuffer->unmap();
-
-		clFinish(*mCLRoot->getCommandQueue());
-	}
-
 	bool result = processInputs(deltaTime);
 	return result;
 }
 
 void OgreAppLogic::shutdown(void)
 {
-	mVertexBuffer->unregister();
-	
-	mCLRoot->shutdown();
-	mCLRoot->getVertexBufferManager()->destroyVertexBuffer(mVertexBuffer);
-	Ogre::OpenCL::Root::destroyRoot(mCLRoot);
+	delete mCanvasTexture;
 
 	mApplication->getOgreRoot()->removeFrameListener(mStatsFrameListener);
 	delete mStatsFrameListener;
@@ -157,10 +132,6 @@ void OgreAppLogic::createCamera(void)
 {
 	mCamera = mSceneMgr->createCamera("Camera");
 	mCamera->setAutoAspectRatio(true);
-	mCamera->setPosition(Ogre::Vector3(0, 3, -2));
-	mCamera->lookAt(0, 0, 0);
-	mCamera->setNearClipDistance(0.1f);
-	mCamera->setFarClipDistance(10000.0);
 	mViewport->setCamera(mCamera);
 }
 
@@ -174,8 +145,8 @@ void OgreAppLogic::createScene(void)
 
 bool OgreAppLogic::processInputs(Ogre::Real deltaTime)
 {
-	const Degree ROT_SCALE = Degree(100.0f);
-	const Real MOVE_SCALE = 5.0;
+	const Degree ROT_SCALE = Degree(60.0f);
+	const Real MOVE_SCALE = 5000.0;
 	Vector3 translateVector(Vector3::ZERO);
 	Degree rotX(0);
 	Degree rotY(0);
@@ -213,16 +184,6 @@ bool OgreAppLogic::processInputs(Ogre::Real deltaTime)
 
 	if(keyboard->isKeyDown(OIS::KC_LEFT))
 		rotX += ROT_SCALE;					// Turn camea left
-
-	if (keyboard->isKeyDown(OIS::KC_SPACE) && mTimeUntilNextToggle <= 0)
-	{
-		mIsOpenCLEnabled = !mIsOpenCLEnabled;
-		mTimeUntilNextToggle = 0.2f;
-	}
-
-	if (mTimeUntilNextToggle >= 0)
-		mTimeUntilNextToggle -= deltaTime;
-
 
 	// mouse moves
 	const OIS::MouseState &ms = mouse->getMouseState();

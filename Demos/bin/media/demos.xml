@@ -1,0 +1,43 @@
+<demos>
+	<group name="Drawing shapes">
+		<demo reference="img/shapes0.png" script="../../media/js/shapes0.js" width="150" height="150" name="Rectangular shape" />
+		<demo reference="img/shapes1.png" script="../../media/js/shapes1.js" width="150" height="150" name="MoveTo" />
+		<demo reference="img/shapes2.png" script="../../media/js/shapes2.js" width="150" height="150" name="LineTo" />
+		<demo reference="img/shapes3.png" script="../../media/js/shapes3.js" width="150" height="200" name="Arc" />
+		<demo reference="img/shapes4.png" script="../../media/js/shapes4.js" width="150" height="150" name="QuadraticCurveTo" />
+		<demo reference="img/shapes5.png" script="../../media/js/shapes5.js" width="150" height="150" name="BezierCurveTo" />
+		<demo reference="img/shapes6.png" script="../../media/js/shapes6.js" width="150" height="150" name="Combination of drawing methods" />
+	</group>
+	<group name="Using images">
+		<demo reference="img/drawImage0.png" script="../../media/js/drawImage0.js" width="180" height="130" name="drawImage example 1" />
+		<demo reference="img/drawImage1.png" script="../../media/js/drawImage1.js" width="150" height="150" name="drawImage example 2" />
+		<demo reference="img/drawImage2.png" script="../../media/js/drawImage2.js" width="150" height="150" name="drawImage example 3" />
+	</group>
+	<group name="Applying styles and colors">
+		<demo reference="img/style0.png"  script="../../media/js/style0.js"  width="150" height="150" name="fillStyle" />
+		<demo reference="img/style1.png"  script="../../media/js/style1.js"  width="150" height="150" name="strokeStyle" />
+		<demo reference="img/style2.png"  script="../../media/js/style2.js"  width="150" height="150" name="globalAlpha" />
+		<demo reference="img/style3.png"  script="../../media/js/style3.js"  width="150" height="150" name="rgba" />
+		<demo reference="img/style4.png"  script="../../media/js/style4.js"  width="150" height="150" name="lineWidth" />
+		<demo reference="img/style5.png"  script="../../media/js/style5.js"  width="150" height="150" name="lineCap" />
+		<demo reference="img/style6.png"  script="../../media/js/style6.js"  width="150" height="150" name="lineJoin" />
+		<demo reference="img/style7.png"  script="../../media/js/style7.js"  width="150" height="150" name="miterLimit" />
+		<demo reference="img/style8.png"  script="../../media/js/style8.js"  width="150" height="150" name="linearGradient" />
+		<demo reference="img/style9.png"  script="../../media/js/style9.js"  width="150" height="150" name="radialGradient" />
+		<demo reference="img/style10.png" script="../../media/js/style10.js" width="150" height="150" name="pattern" />
+	</group>	
+	<group name="Transformations">
+		<demo reference="img/transfo0.png" script="../../media/js/transfo0.js" width="150" height="150" name="save and restore" />
+		<demo reference="img/transfo1.png" script="../../media/js/transfo1.js" width="300" height="300" name="translate" />
+		<demo reference="img/transfo2.png" script="../../media/js/transfo2.js" width="150" height="150" name="rotate" />
+		<demo reference="img/transfo3.png" script="../../media/js/transfo3.js" width="300" height="300" name="scale" />
+		<demo reference="img/transfo4.png" script="../../media/js/transfo4.js" width="400" height="400" name="transform" />
+	</group>
+	<group name="Compositing">
+		<!--<demo reference="img/composite0.png" script="../../media/js/composite0.js" width="300" height="300" name="globalCompositeOperation" />-->
+		<demo reference="img/composite1.png" script="../../media/js/composite1.js" width="150" height="150" name="clip" />
+	</group>
+	<group name="Basic animations">
+		<!-- https://developer.mozilla.org/en/Canvas_tutorial%3aBasic_animations -->
+	</group>
+</demos>

@@ -1,0 +1,19 @@
+You need to grab v8 from the svn : http://v8.googlecode.com/svn/trunk/ (tested at revision 4655)
+Then create the following folder :
+v8/lib
+v8/lib/Win32
+v8/lib/Win32/Debug
+v8/lib/Win32/Release
+v8/lib/x64
+v8/lib/x64/Debug
+v8/lib/x64/Release
+
+Then you need to open the solution situated in : v8/tools/visual_studio/
+- v8.sln (Win32)
+- v8_x64.sln (x64)
+
+Compile the v8 project in the v8 solution in both Debug/Release.
+copy v8/tools/visual_studio/Debug/lib/v8.lib     to v8/lib/Win32/Debug/v8.lib
+copy v8/tools/visual_studio/Release/lib/v8.lib   to v8/lib/Win32/Release/v8.lib
+copy v8/tools/visual_studio/Debug64/lib/v8.lib   to v8/lib/x64/Debug/v8.lib
+copy v8/tools/visual_studio/Release64/lib/v8.lib to v8/lib/x64/Release/v8.lib

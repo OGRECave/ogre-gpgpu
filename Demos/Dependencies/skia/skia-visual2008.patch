@@ -1,0 +1,1339 @@
+Index: include/core/stdint.h
+===================================================================
+--- include/core/stdint.h	(revision 0)
++++ include/core/stdint.h	(revision 0)
+@@ -0,0 +1,199 @@
++/* stdint.h standard header */
++#pragma once
++#ifndef _STDINT
++#define _STDINT
++#ifndef RC_INVOKED
++#include <yvals.h>
++
++/* NB: assumes
++	byte has 8 bits
++	long is 32 bits
++	pointer can convert to and from long long
++	long long is longest type
++ */
++
++_C_STD_BEGIN
++		/* TYPE DEFINITIONS */
++typedef signed char int8_t;
++typedef short int16_t;
++typedef int int32_t;
++
++typedef unsigned char uint8_t;
++typedef unsigned short uint16_t;
++typedef unsigned int uint32_t;
++
++typedef signed char int_least8_t;
++typedef short int_least16_t;
++typedef int int_least32_t;
++
++typedef unsigned char uint_least8_t;
++typedef unsigned short uint_least16_t;
++typedef unsigned int uint_least32_t;
++
++typedef char int_fast8_t;
++typedef int int_fast16_t;
++typedef int int_fast32_t;
++
++typedef unsigned char uint_fast8_t;
++typedef unsigned int uint_fast16_t;
++typedef unsigned int uint_fast32_t;
++
++#ifndef _INTPTR_T_DEFINED
++ #define _INTPTR_T_DEFINED
++ #ifdef _WIN64
++typedef __int64 intptr_t;
++ #else /* _WIN64 */
++typedef _W64 int intptr_t;
++ #endif /* _WIN64 */
++#endif /* _INTPTR_T_DEFINED */
++
++#ifndef _UINTPTR_T_DEFINED
++ #define _UINTPTR_T_DEFINED
++ #ifdef _WIN64
++typedef unsigned __int64 uintptr_t;
++ #else /* _WIN64 */
++typedef _W64 unsigned int uintptr_t;
++ #endif /* _WIN64 */
++#endif /* _UINTPTR_T_DEFINED */
++
++typedef _Longlong int64_t;
++typedef _ULonglong uint64_t;
++
++typedef _Longlong int_least64_t;
++typedef _ULonglong uint_least64_t;
++
++typedef _Longlong int_fast64_t;
++typedef _ULonglong uint_fast64_t;
++
++typedef _Longlong intmax_t;
++typedef _ULonglong uintmax_t;
++
++		/* LIMIT MACROS */
++#define INT8_MIN	(-0x7f - _C2)
++#define INT16_MIN	(-0x7fff - _C2)
++#define INT32_MIN	(-0x7fffffff - _C2)
++
++#define INT8_MAX	0x7f
++#define INT16_MAX	0x7fff
++#define INT32_MAX	0x7fffffff
++#define UINT8_MAX	0xff
++#define UINT16_MAX	0xffff
++#define UINT32_MAX	0xffffffff
++
++#define INT_LEAST8_MIN		(-0x7f - _C2)
++#define INT_LEAST16_MIN		(-0x7fff - _C2)
++#define INT_LEAST32_MIN		(-0x7fffffff - _C2)
++
++#define INT_LEAST8_MAX		0x7f
++#define INT_LEAST16_MAX		0x7fff
++#define INT_LEAST32_MAX		0x7fffffff
++#define UINT_LEAST8_MAX		0xff
++#define UINT_LEAST16_MAX	0xffff
++#define UINT_LEAST32_MAX	0xffffffff
++
++#define INT_FAST8_MIN		(-0x7f - _C2)
++#define INT_FAST16_MIN		(-0x7fff - _C2)
++#define INT_FAST32_MIN		(-0x7fffffff - _C2)
++
++#define INT_FAST8_MAX		0x7f
++#define INT_FAST16_MAX		0x7fff
++#define INT_FAST32_MAX		0x7fffffff
++#define UINT_FAST8_MAX		0xff
++#define UINT_FAST16_MAX		0xffff
++#define UINT_FAST32_MAX		0xffffffff
++
++ #if _INTPTR == 0 || _INTPTR == 1
++#define INTPTR_MAX			0x7fffffff
++#define INTPTR_MIN			(-INTPTR_MAX - _C2)
++#define UINTPTR_MAX			0xffffffff
++
++ #else /* _INTPTR == 2 */
++#define INTPTR_MIN			(-_LLONG_MAX - _C2)
++#define INTPTR_MAX			_LLONG_MAX
++#define UINTPTR_MAX			_ULLONG_MAX
++#endif /* _INTPTR */
++
++#define INT8_C(x)	(x)
++#define INT16_C(x)	(x)
++#define INT32_C(x)	((x) + (INT32_MAX - INT32_MAX))
++
++#define UINT8_C(x)	(x)
++#define UINT16_C(x)	(x)
++#define UINT32_C(x)	((x) + (UINT32_MAX - UINT32_MAX))
++
++#ifdef _WIN64
++ #define PTRDIFF_MIN		INT64_MIN
++ #define PTRDIFF_MAX		INT64_MAX
++#else /* _WIN64 */
++ #define PTRDIFF_MIN		INT32_MIN
++ #define PTRDIFF_MAX		INT32_MAX
++#endif /* _WIN64 */
++
++#define SIG_ATOMIC_MIN	INT32_MIN
++#define SIG_ATOMIC_MAX	INT32_MAX
++
++#ifndef SIZE_MAX
++ #ifdef _WIN64
++  #define SIZE_MAX		UINT64_MAX
++ #else /* _WIN64 */
++  #define SIZE_MAX		UINT32_MAX
++ #endif /* _WIN64 */
++#endif /* SIZE_MAX */
++
++#define WCHAR_MIN	0x0000
++#define WCHAR_MAX	0xffff
++
++#define WINT_MIN	0x0000
++#define WINT_MAX	0xffff
++
++ #define INT64_MIN	(-0x7fffffffffffffff - _C2)
++ #define INT64_MAX	0x7fffffffffffffff
++ #define UINT64_MAX	0xffffffffffffffffU
++
++ #define INT_LEAST64_MIN	(-0x7fffffffffffffff - _C2)
++ #define INT_LEAST64_MAX	0x7fffffffffffffff
++ #define UINT_LEAST64_MAX	0xffffffffffffffffU
++
++ #define INT_FAST64_MIN		(-0x7fffffffffffffff - _C2)
++ #define INT_FAST64_MAX		0x7fffffffffffffff
++ #define UINT_FAST64_MAX	0xffffffffffffffffU
++
++ #define INTMAX_MIN		(-0x7fffffffffffffff - _C2)
++ #define INTMAX_MAX		0x7fffffffffffffff
++ #define UINTMAX_MAX	0xffffffffffffffffU
++
++#define INT64_C(x)		((x) + (INT64_MAX - INT64_MAX))
++#define UINT64_C(x)		((x) + (UINT64_MAX - UINT64_MAX))
++#define INTMAX_C(x)		INT64_C(x)
++#define UINTMAX_C(x)	UINT64_C(x)
++_C_STD_END
++#endif /* RC_INVOKED */
++#endif /* _STDINT */
++
++ #if defined(_STD_USING)
++using _CSTD int8_t; using _CSTD int16_t;
++using _CSTD int32_t; using _CSTD int64_t;
++
++using _CSTD uint8_t; using _CSTD uint16_t;
++using _CSTD uint32_t; using _CSTD uint64_t;
++
++using _CSTD int_least8_t; using _CSTD int_least16_t;
++using _CSTD int_least32_t;  using _CSTD int_least64_t;
++using _CSTD uint_least8_t; using _CSTD uint_least16_t;
++using _CSTD uint_least32_t; using _CSTD uint_least64_t;
++
++using _CSTD intmax_t; using _CSTD uintmax_t;
++
++using _CSTD uintptr_t;
++using _CSTD intptr_t;
++
++using _CSTD int_fast8_t; using _CSTD int_fast16_t;
++using _CSTD int_fast32_t; using _CSTD int_fast64_t;
++using _CSTD uint_fast8_t; using _CSTD uint_fast16_t;
++using _CSTD uint_fast32_t; using _CSTD uint_fast64_t;
++ #endif /* defined(_STD_USING) */
++
++/*
++ * Copyright (c) 1992-2009 by P.J. Plauger.  ALL RIGHTS RESERVED.
++ * Consult your license regarding permissions and restrictions.
++V5.20:0009 */
+Index: vs/core/skia.sln
+===================================================================
+--- vs/core/skia.sln	(revision 0)
++++ vs/core/skia.sln	(revision 0)
+@@ -0,0 +1,26 @@
++﻿
++Microsoft Visual Studio Solution File, Format Version 10.00
++# Visual Studio 2008
++Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "skia", "skia.vcproj", "{F4EE984C-4A6A-48C2-8195-A0B7774005AE}"
++EndProject
++Global
++	GlobalSection(SolutionConfigurationPlatforms) = preSolution
++		Debug|Win32 = Debug|Win32
++		Debug|x64 = Debug|x64
++		Release|Win32 = Release|Win32
++		Release|x64 = Release|x64
++	EndGlobalSection
++	GlobalSection(ProjectConfigurationPlatforms) = postSolution
++		{F4EE984C-4A6A-48C2-8195-A0B7774005AE}.Debug|Win32.ActiveCfg = Debug|Win32
++		{F4EE984C-4A6A-48C2-8195-A0B7774005AE}.Debug|Win32.Build.0 = Debug|Win32
++		{F4EE984C-4A6A-48C2-8195-A0B7774005AE}.Debug|x64.ActiveCfg = Debug|x64
++		{F4EE984C-4A6A-48C2-8195-A0B7774005AE}.Debug|x64.Build.0 = Debug|x64
++		{F4EE984C-4A6A-48C2-8195-A0B7774005AE}.Release|Win32.ActiveCfg = Release|Win32
++		{F4EE984C-4A6A-48C2-8195-A0B7774005AE}.Release|Win32.Build.0 = Release|Win32
++		{F4EE984C-4A6A-48C2-8195-A0B7774005AE}.Release|x64.ActiveCfg = Release|x64
++		{F4EE984C-4A6A-48C2-8195-A0B7774005AE}.Release|x64.Build.0 = Release|x64
++	EndGlobalSection
++	GlobalSection(SolutionProperties) = preSolution
++		HideSolutionNode = FALSE
++	EndGlobalSection
++EndGlobal
+Index: vs/core/skia.vcproj
+===================================================================
+--- vs/core/skia.vcproj	(revision 0)
++++ vs/core/skia.vcproj	(revision 0)
+@@ -0,0 +1,1099 @@
++<?xml version="1.0" encoding="Windows-1252"?>
++<VisualStudioProject
++	ProjectType="Visual C++"
++	Version="9.00"
++	Name="skia"
++	ProjectGUID="{F4EE984C-4A6A-48C2-8195-A0B7774005AE}"
++	RootNamespace="skia"
++	Keyword="ManagedCProj"
++	TargetFrameworkVersion="196613"
++	>
++	<Platforms>
++		<Platform
++			Name="Win32"
++		/>
++		<Platform
++			Name="x64"
++		/>
++	</Platforms>
++	<ToolFiles>
++	</ToolFiles>
++	<Configurations>
++		<Configuration
++			Name="Debug|Win32"
++			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
++			IntermediateDirectory="$(ConfigurationName)"
++			ConfigurationType="4"
++			CharacterSet="1"
++			ManagedExtensions="0"
++			>
++			<Tool
++				Name="VCPreBuildEventTool"
++			/>
++			<Tool
++				Name="VCCustomBuildTool"
++			/>
++			<Tool
++				Name="VCXMLDataGeneratorTool"
++			/>
++			<Tool
++				Name="VCWebServiceProxyGeneratorTool"
++			/>
++			<Tool
++				Name="VCMIDLTool"
++			/>
++			<Tool
++				Name="VCCLCompilerTool"
++				Optimization="0"
++				AdditionalIncludeDirectories="..\..\include\core;..\..\include\xml;..\..\include\utils;..\..\include\config;..\..\include\views;..\..\src\core;..\..\include\images;..\..\include\effects"
++				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
++				RuntimeLibrary="3"
++				WarningLevel="3"
++				DebugInformationFormat="3"
++			/>
++			<Tool
++				Name="VCManagedResourceCompilerTool"
++			/>
++			<Tool
++				Name="VCResourceCompilerTool"
++			/>
++			<Tool
++				Name="VCPreLinkEventTool"
++			/>
++			<Tool
++				Name="VCLibrarianTool"
++			/>
++			<Tool
++				Name="VCALinkTool"
++			/>
++			<Tool
++				Name="VCXDCMakeTool"
++			/>
++			<Tool
++				Name="VCBscMakeTool"
++			/>
++			<Tool
++				Name="VCFxCopTool"
++			/>
++			<Tool
++				Name="VCPostBuildEventTool"
++				CommandLine="COPY /Y &quot;$(OutDir)\$(ProjectName).lib&quot; &quot;$(SolutionDir)\..\..\lib\$(PlatformName)\$(ConfigurationName)\$(ProjectName).lib&quot;"
++			/>
++		</Configuration>
++		<Configuration
++			Name="Debug|x64"
++			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
++			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
++			ConfigurationType="4"
++			CharacterSet="1"
++			ManagedExtensions="0"
++			>
++			<Tool
++				Name="VCPreBuildEventTool"
++			/>
++			<Tool
++				Name="VCCustomBuildTool"
++			/>
++			<Tool
++				Name="VCXMLDataGeneratorTool"
++			/>
++			<Tool
++				Name="VCWebServiceProxyGeneratorTool"
++			/>
++			<Tool
++				Name="VCMIDLTool"
++				TargetEnvironment="3"
++			/>
++			<Tool
++				Name="VCCLCompilerTool"
++				Optimization="0"
++				AdditionalIncludeDirectories="..\..\include\core;..\..\include\xml;..\..\include\utils;..\..\include\config;..\..\include\views;..\..\src\core;..\..\include\images;..\..\include\effects"
++				PreprocessorDefinitions="WIN32;_DEBUG;SK_IGNORE_STDINT_DOT_H;_CRT_SECURE_NO_WARNINGS"
++				RuntimeLibrary="3"
++				WarningLevel="3"
++				DebugInformationFormat="3"
++			/>
++			<Tool
++				Name="VCManagedResourceCompilerTool"
++			/>
++			<Tool
++				Name="VCResourceCompilerTool"
++			/>
++			<Tool
++				Name="VCPreLinkEventTool"
++			/>
++			<Tool
++				Name="VCLibrarianTool"
++			/>
++			<Tool
++				Name="VCALinkTool"
++			/>
++			<Tool
++				Name="VCXDCMakeTool"
++			/>
++			<Tool
++				Name="VCBscMakeTool"
++			/>
++			<Tool
++				Name="VCFxCopTool"
++			/>
++			<Tool
++				Name="VCPostBuildEventTool"
++				CommandLine="COPY /Y &quot;$(OutDir)\$(ProjectName).lib&quot; &quot;$(SolutionDir)\..\..\lib\$(PlatformName)\$(ConfigurationName)\$(ProjectName).lib&quot;"
++			/>
++		</Configuration>
++		<Configuration
++			Name="Release|Win32"
++			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
++			IntermediateDirectory="$(ConfigurationName)"
++			ConfigurationType="4"
++			CharacterSet="1"
++			ManagedExtensions="0"
++			WholeProgramOptimization="1"
++			>
++			<Tool
++				Name="VCPreBuildEventTool"
++			/>
++			<Tool
++				Name="VCCustomBuildTool"
++			/>
++			<Tool
++				Name="VCXMLDataGeneratorTool"
++			/>
++			<Tool
++				Name="VCWebServiceProxyGeneratorTool"
++			/>
++			<Tool
++				Name="VCMIDLTool"
++			/>
++			<Tool
++				Name="VCCLCompilerTool"
++				InlineFunctionExpansion="2"
++				EnableIntrinsicFunctions="true"
++				AdditionalIncludeDirectories="..\..\include\core;..\..\include\xml;..\..\include\utils;..\..\include\config;..\..\include\views;..\..\src\core;..\..\include\images;..\..\include\effects"
++				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
++				RuntimeLibrary="2"
++				WarningLevel="3"
++				DebugInformationFormat="3"
++			/>
++			<Tool
++				Name="VCManagedResourceCompilerTool"
++			/>
++			<Tool
++				Name="VCResourceCompilerTool"
++			/>
++			<Tool
++				Name="VCPreLinkEventTool"
++			/>
++			<Tool
++				Name="VCLibrarianTool"
++			/>
++			<Tool
++				Name="VCALinkTool"
++			/>
++			<Tool
++				Name="VCXDCMakeTool"
++			/>
++			<Tool
++				Name="VCBscMakeTool"
++			/>
++			<Tool
++				Name="VCFxCopTool"
++			/>
++			<Tool
++				Name="VCPostBuildEventTool"
++				CommandLine="COPY /Y &quot;$(OutDir)\$(ProjectName).lib&quot; &quot;$(SolutionDir)\..\..\lib\$(PlatformName)\$(ConfigurationName)\$(ProjectName).lib&quot;"
++			/>
++		</Configuration>
++		<Configuration
++			Name="Release|x64"
++			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
++			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
++			ConfigurationType="4"
++			CharacterSet="1"
++			ManagedExtensions="0"
++			WholeProgramOptimization="1"
++			>
++			<Tool
++				Name="VCPreBuildEventTool"
++			/>
++			<Tool
++				Name="VCCustomBuildTool"
++			/>
++			<Tool
++				Name="VCXMLDataGeneratorTool"
++			/>
++			<Tool
++				Name="VCWebServiceProxyGeneratorTool"
++			/>
++			<Tool
++				Name="VCMIDLTool"
++				TargetEnvironment="3"
++			/>
++			<Tool
++				Name="VCCLCompilerTool"
++				InlineFunctionExpansion="2"
++				EnableIntrinsicFunctions="true"
++				AdditionalIncludeDirectories="..\..\include\core;..\..\include\xml;..\..\include\utils;..\..\include\config;..\..\include\views;..\..\src\core;..\..\include\images;..\..\include\effects"
++				PreprocessorDefinitions="WIN32;NDEBUG;SK_IGNORE_STDINT_DOT_H;_CRT_SECURE_NO_WARNINGS"
++				RuntimeLibrary="2"
++				WarningLevel="3"
++				DebugInformationFormat="3"
++			/>
++			<Tool
++				Name="VCManagedResourceCompilerTool"
++			/>
++			<Tool
++				Name="VCResourceCompilerTool"
++			/>
++			<Tool
++				Name="VCPreLinkEventTool"
++			/>
++			<Tool
++				Name="VCLibrarianTool"
++			/>
++			<Tool
++				Name="VCALinkTool"
++			/>
++			<Tool
++				Name="VCXDCMakeTool"
++			/>
++			<Tool
++				Name="VCBscMakeTool"
++			/>
++			<Tool
++				Name="VCFxCopTool"
++			/>
++			<Tool
++				Name="VCPostBuildEventTool"
++				CommandLine="COPY /Y &quot;$(OutDir)\$(ProjectName).lib&quot; &quot;$(SolutionDir)\..\..\lib\$(PlatformName)\$(ConfigurationName)\$(ProjectName).lib&quot;"
++			/>
++		</Configuration>
++	</Configurations>
++	<References>
++	</References>
++	<Files>
++		<Filter
++			Name="Source Files"
++			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
++			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
++			>
++			<Filter
++				Name="core"
++				>
++				<File
++					RelativePath="..\..\src\core\Sk64.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkAlphaRuns.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmap.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmap_scroll.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcShader.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcState.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcState_matrixProcs.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapSampler.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitRow_D16.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitRow_D32.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitRow_D4444.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitter_4444.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitter_A1.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitter_A8.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitter_ARGB32.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitter_ARGB32_Subpixel.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitter_RGB16.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitter_Sprite.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBuffer.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkCanvas.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkChunkAlloc.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkColor.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkColorFilter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkColorTable.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkComposeShader.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkConcaveToTriangles.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkCordic.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkCubicClipper.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkDebug.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkDeque.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkDevice.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkDither.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkDraw.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkEdge.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkEdgeBuilder.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkEdgeClipper.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkFilterProc.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkFlattenable.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkFloat.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkFloatBits.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkFontHost.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkGeometry.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkGlobals.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkGlyphCache.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkGraphics.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkLineClipper.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkMask.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkMaskFilter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkMath.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkMatrix.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkMemory_stdlib.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPackBits.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPaint.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPath.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPathEffect.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPathHeap.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPathMeasure.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPicture.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPictureFlat.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPicturePlayback.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPictureRecord.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPixelRef.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPoint.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkProcSpriteBlitter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPtrRecorder.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkQuadClipper.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkRasterizer.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkRect.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkRefCnt.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkRegion.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkRegion_path.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkScalerContext.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkScan.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkScan_Antihair.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkScan_AntiPath.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkScan_Hairline.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkScan_Path.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkShader.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkShape.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkSpriteBlitter_ARGB32.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkSpriteBlitter_RGB16.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkStream.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkString.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkStroke.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkStrokerPriv.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkTSearch.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkTypeface.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkUnPreMultiply.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkUtils.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkWriter32.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkXfermode.cpp"
++					>
++				</File>
++			</Filter>
++			<Filter
++				Name="effects"
++				>
++				<File
++					RelativePath="..\..\src\effects\Sk1DPathEffect.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\Sk2DPathEffect.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkAvoidXfermode.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkBlurDrawLooper.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkBlurMask.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkBlurMaskFilter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkColorFilters.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkColorMatrixFilter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkCornerPathEffect.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkDashPathEffect.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkDiscretePathEffect.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkEmbossMask.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkEmbossMaskFilter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkGradientShader.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkGroupShape.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkKernel33MaskFilter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkLayerDrawLooper.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkLayerRasterizer.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkPaintFlagsDrawFilter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkPixelXorXfermode.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkPorterDuff.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkRectShape.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkTableMaskFilter.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkTransparentShader.cpp"
++					>
++				</File>
++			</Filter>
++			<Filter
++				Name="images"
++				>
++				<File
++					RelativePath="..\..\src\images\SkImageDecoder.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\images\SkImageDecoder_Factory.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\images\SkImageEncoder.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\images\SkImageEncoder_Factory.cpp"
++					>
++				</File>
++			</Filter>
++			<Filter
++				Name="ports"
++				>
++				<File
++					RelativePath="..\..\src\ports\SkDebug_stdio.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\ports\SkFontHost_win.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\ports\SkGlobals_global.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\ports\SkOSFile_stdio.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\ports\SkThread_win.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\ports\SkTime_win.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\ports\SkXMLParser_empty.cpp"
++					>
++				</File>
++			</Filter>
++			<Filter
++				Name="utils"
++				>
++				<File
++					RelativePath="..\..\src\utils\SkDumpCanvas.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\utils\SkParse.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\utils\SkParsePath.cpp"
++					>
++				</File>
++				<Filter
++					Name="win"
++					>
++					<File
++						RelativePath="..\..\src\utils\win\SkOSWindow_Win.cpp"
++						>
++					</File>
++				</Filter>
++			</Filter>
++			<Filter
++				Name="views"
++				>
++				<File
++					RelativePath="..\..\src\views\SkEvent.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\views\SkEventSink.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\views\SkMetaData.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\views\SkOSMenu.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\views\SkTagList.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\views\SkView.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\views\SkViewInflate.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\views\SkViewPriv.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\views\SkWindow.cpp"
++					>
++				</File>
++			</Filter>
++			<Filter
++				Name="xml"
++				>
++				<File
++					RelativePath="..\..\src\xml\SkDOM.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\xml\SkXMLParser.cpp"
++					>
++				</File>
++			</Filter>
++			<Filter
++				Name="opts"
++				>
++				<File
++					RelativePath="..\..\src\opts\opts_check_SSE2.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\opts\SkBitmapProcState_opts_SSE2.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\opts\SkBlitRow_opts_SSE2.cpp"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\opts\SkUtils_opts_SSE2.cpp"
++					>
++				</File>
++			</Filter>
++		</Filter>
++		<Filter
++			Name="Header Files"
++			Filter="h;hpp;hxx;hm;inl;inc;xsd"
++			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
++			>
++			<Filter
++				Name="core"
++				>
++				<File
++					RelativePath="..\..\src\core\SkAntiRun.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcShader.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcState.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcState_filter.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcState_matrix.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcState_matrix_clamp.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcState_matrix_repeat.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcState_sample.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapProcState_shaderproc.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapSampler.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapSamplerTemplate.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapShader16BilerpTemplate.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBitmapShaderTemplate.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkBlitBWMaskTemplate.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkConcaveToTriangles.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkCordic.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkCoreBlitters.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkCubicClipper.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkDrawProcs.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkEdge.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkEdgeBuilder.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkFilterProc.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkFloat.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkFP.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkGlyphCache.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPathHeap.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPictureFlat.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPicturePlayback.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkPictureRecord.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkQuadClipper.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkRegionPriv.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkScanPriv.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkSinTable.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkSpriteBlitter.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkSpriteBlitterTemplate.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkStrokerPriv.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkTemplatesPriv.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\core\SkTSort.h"
++					>
++				</File>
++			</Filter>
++			<Filter
++				Name="effect"
++				>
++				<File
++					RelativePath="..\..\src\effects\SkBlurMask.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkEmbossMask.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkEmbossMask_Table.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\effects\SkRadialGradient_Table.h"
++					>
++				</File>
++			</Filter>
++			<Filter
++				Name="views"
++				>
++				<File
++					RelativePath="..\..\src\views\SkTagList.h"
++					>
++				</File>
++				<File
++					RelativePath="..\..\src\views\SkViewPriv.h"
++					>
++				</File>
++			</Filter>
++		</Filter>
++	</Files>
++	<Globals>
++	</Globals>
++</VisualStudioProject>

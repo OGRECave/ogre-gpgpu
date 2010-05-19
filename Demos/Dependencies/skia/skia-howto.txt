@@ -1,0 +1,3 @@
+You need to grab skia from the svn : http://skia.googlecode.com/svn/trunk/ (tested at revision 564)
+Then apply the patch "skia-visual2008.patch" to create the visual studio 2008 solution
+

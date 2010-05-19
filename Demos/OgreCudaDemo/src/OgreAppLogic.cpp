@@ -162,7 +162,7 @@ void OgreAppLogic::createCamera(void)
 void OgreAppLogic::createScene(void)
 {
 	mSceneMgr->setAmbientLight(ColourValue(0.5,0.5,0.5));
-	mSceneMgr->setSkyBox(true, "Examples/Grid");
+	mSceneMgr->setSkyBox(true, "Examples/GridSkyBox");
 }
 
 //--------------------------------- update --------------------------------

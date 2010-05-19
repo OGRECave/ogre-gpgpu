@@ -1,22 +1,10 @@
 #include "OgreAppLogic.h"
 #include "OgreApp.h"
-#include <Ogre.h>
-#include <OgrePanelOverlayElement.h>
-
+#include <Ogre/Ogre.h>
 #include "StatsFrameListener.h"
-#include <OgreGLHardwareVertexBuffer.h>
-#include <OgreD3D9HardwareVertexBuffer.h>
-#include <OgreRenderSystemCapabilitiesManager.h>
+#include "CanvasV8Context.h"
 
 using namespace Ogre;
-
-#include <oclUtils.h>
-
-const unsigned int mesh_width = 256;
-const unsigned int mesh_height = 256;
-size_t szGlobalWorkSize[] = {mesh_width, mesh_height};
-cl_kernel ckKernel;
-cl_program cpProgram;
 
 OgreAppLogic::OgreAppLogic() 
 : mApplication(0)
@@ -24,12 +12,13 @@ OgreAppLogic::OgreAppLogic()
 	// ogre
 	mSceneMgr		= 0;
 	mViewport		= 0;
+	mDemoIndex      = 0;
 	mStatsFrameListener = 0;
-	mOISListener.mParent = this;
-	mTotalTime = 0;
-	mIsOpenCLEnabled = true;
 	mTimeUntilNextToggle = 0;
-	mCustomVertexBufferRenderable = NULL;
+	mPanel = 0;
+	mTexture = 0;
+	mOISListener.mParent = this;
+	mLogger = new Ogre::Canvas::Logger("Canvas.log");
 }
 
 OgreAppLogic::~OgreAppLogic()
@@ -44,12 +33,11 @@ bool OgreAppLogic::preInit(const Ogre::StringVector &commandArgs)
 // postAppInit
 bool OgreAppLogic::init(void)
 {
-	cl_int error;
-
 	createSceneManager();
 	createViewport();
 	createCamera();
 	createScene();
+	createCanvasOverlay();
 
 	mStatsFrameListener = new StatsFrameListener(mApplication->getRenderWindow());
 	mApplication->getOgreRoot()->addFrameListener(mStatsFrameListener);
@@ -58,35 +46,8 @@ bool OgreAppLogic::init(void)
 	mApplication->getKeyboard()->setEventCallback(&mOISListener);
 	mApplication->getMouse()->setEventCallback(&mOISListener);
 
-	mCustomVertexBufferRenderable = new CustomVertexBufferRenderable(256, 256);	
-	Ogre::SceneNode* clNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("OpenCLMesh");
-	clNode->attachObject(mCustomVertexBufferRenderable);
-
-	mCLRoot = Ogre::OpenCL::Root::createRoot(mApplication->getRenderWindow(), mApplication->getOgreRoot()->getRenderSystem());
-	mCLRoot->init();
-
-	// load program source
-	size_t program_length;
-	char *programSource = oclLoadProgSource("C:\\AnimatedTexture.cl", "", &program_length);
-	
-	// create the program
-	cpProgram = clCreateProgramWithSource(*mCLRoot->getContext(), 1, (const char**) &programSource, &program_length, &error);
-
-	// build the program
-	error = clBuildProgram(cpProgram, 0, NULL, "-cl-fast-relaxed-math", NULL, NULL);
-
-	// create the kernel
-	ckKernel = clCreateKernel(cpProgram, "sine_wave", &error);
-
-	// create vbo
-	Ogre::HardwareVertexBufferSharedPtr vertexBuffer = mCustomVertexBufferRenderable->getHardwareVertexBuffer();
-	mVertexBuffer = mCLRoot->getVertexBufferManager()->createVertexBuffer(vertexBuffer);
-	mVertexBuffer->registerForCL();
-
-	// set the args values 
-	error  = clSetKernelArg(ckKernel, 0, sizeof(cl_mem), (void *) mVertexBuffer->getPointer());
-	error |= clSetKernelArg(ckKernel, 1, sizeof(unsigned int), &mesh_width);
-	error |= clSetKernelArg(ckKernel, 2, sizeof(unsigned int), &mesh_height);
+	if (mDemoViewer.getNbDemo() > 0)
+		setDemo(mDemoViewer.getDemo(0));
 
 	return true;
 }
@@ -98,35 +59,12 @@ bool OgreAppLogic::preUpdate(Ogre::Real deltaTime)
 
 bool OgreAppLogic::update(Ogre::Real deltaTime)
 {
-	if (mIsOpenCLEnabled)
-	{
-		mTotalTime += deltaTime;
-		cl_int ciErrNum;
-
-		mVertexBuffer->map();
-
-		// Set arg 3 and execute the kernel
-		ciErrNum = clSetKernelArg(ckKernel, 3, sizeof(float), &mTotalTime);
-
-		ciErrNum = clEnqueueNDRangeKernel(*mCLRoot->getCommandQueue(), ckKernel, 2, NULL, szGlobalWorkSize, NULL, 0,0,0 );
-
-		mVertexBuffer->unmap();
-
-		clFinish(*mCLRoot->getCommandQueue());
-	}
-
 	bool result = processInputs(deltaTime);
 	return result;
 }
 
 void OgreAppLogic::shutdown(void)
 {
-	mVertexBuffer->unregister();
-	
-	mCLRoot->shutdown();
-	mCLRoot->getVertexBufferManager()->destroyVertexBuffer(mVertexBuffer);
-	Ogre::OpenCL::Root::destroyRoot(mCLRoot);
-
 	mApplication->getOgreRoot()->removeFrameListener(mStatsFrameListener);
 	delete mStatsFrameListener;
 	mStatsFrameListener = 0;
@@ -157,25 +95,20 @@ void OgreAppLogic::createCamera(void)
 {
 	mCamera = mSceneMgr->createCamera("Camera");
 	mCamera->setAutoAspectRatio(true);
-	mCamera->setPosition(Ogre::Vector3(0, 3, -2));
-	mCamera->lookAt(0, 0, 0);
-	mCamera->setNearClipDistance(0.1f);
-	mCamera->setFarClipDistance(10000.0);
 	mViewport->setCamera(mCamera);
 }
 
 void OgreAppLogic::createScene(void)
 {
-	mSceneMgr->setAmbientLight(ColourValue(0.5,0.5,0.5));
-	mSceneMgr->setSkyBox(true, "Examples/GridSkyBox");
+
 }
 
 //--------------------------------- update --------------------------------
 
 bool OgreAppLogic::processInputs(Ogre::Real deltaTime)
 {
-	const Degree ROT_SCALE = Degree(100.0f);
-	const Real MOVE_SCALE = 5.0;
+	const Degree ROT_SCALE = Degree(60.0f);
+	const Real MOVE_SCALE = 5000.0;
 	Vector3 translateVector(Vector3::ZERO);
 	Degree rotX(0);
 	Degree rotY(0);
@@ -214,16 +147,6 @@ bool OgreAppLogic::processInputs(Ogre::Real deltaTime)
 	if(keyboard->isKeyDown(OIS::KC_LEFT))
 		rotX += ROT_SCALE;					// Turn camea left
 
-	if (keyboard->isKeyDown(OIS::KC_SPACE) && mTimeUntilNextToggle <= 0)
-	{
-		mIsOpenCLEnabled = !mIsOpenCLEnabled;
-		mTimeUntilNextToggle = 0.2f;
-	}
-
-	if (mTimeUntilNextToggle >= 0)
-		mTimeUntilNextToggle -= deltaTime;
-
-
 	// mouse moves
 	const OIS::MouseState &ms = mouse->getMouseState();
 	if (ms.buttonDown(OIS::MB_Right))
@@ -244,6 +167,20 @@ bool OgreAppLogic::processInputs(Ogre::Real deltaTime)
 	mCamera->moveRelative(translateVector);
 	mCamera->yaw(rotX);
 	mCamera->pitch(rotY);
+
+	if (keyboard->isKeyDown(OIS::KC_ADD) && mTimeUntilNextToggle <= 0)
+	{
+		nextDemo();
+		mTimeUntilNextToggle = 0.2f;
+	}
+	else if (keyboard->isKeyDown(OIS::KC_SUBTRACT) && mTimeUntilNextToggle <= 0)
+	{
+		previousDemo();
+		mTimeUntilNextToggle = 0.2f;
+	}
+
+	if (mTimeUntilNextToggle >= 0)
+		mTimeUntilNextToggle -= deltaTime;
 
 	return true;
 }
@@ -271,4 +208,93 @@ bool OgreAppLogic::OISListener::keyPressed( const OIS::KeyEvent &arg )
 bool OgreAppLogic::OISListener::keyReleased( const OIS::KeyEvent &arg )
 {
 	return true;
+}
+
+void OgreAppLogic::nextDemo()
+{
+	mDemoIndex++;
+	if (mDemoIndex >= mDemoViewer.getNbDemo())
+		mDemoIndex = 0;
+
+	setDemo(mDemoViewer.getDemo(mDemoIndex));
+}
+
+void OgreAppLogic::previousDemo()
+{
+	mDemoIndex--;
+	if (mDemoIndex < 0)
+		mDemoIndex = mDemoViewer.getNbDemo()-1;
+
+	setDemo(mDemoViewer.getDemo(mDemoIndex));
+}
+
+void OgreAppLogic::setDemo(const Demo& _demo)
+{
+	mPanel->setMaterialName("Examples/Grid");
+	createCanvasMaterial("Canvas", _demo.width, _demo.height);
+	mPanel->setDimensions((Ogre::Real)_demo.width, (Ogre::Real)_demo.height);
+	mPanel->setMaterialName("Canvas");
+	emptyCanvas();
+	fillCanvas(_demo.script);
+}
+
+void OgreAppLogic::createCanvasMaterial(const std::string& _name, int _width, int _height)
+{
+	if (mTexture != NULL)
+		deleteCanvasMaterial();
+
+	mTexture = new Ogre::Canvas::Texture(_name, _width, _height, true);
+	mContext = mTexture->getContext();
+
+	mTexture->uploadTexture();
+	mTexture->createMaterial();
+}
+
+void OgreAppLogic::deleteCanvasMaterial()
+{
+	mTexture->deleteMaterial();
+	delete mTexture;
+	mTexture = NULL;
+	mContext = NULL;
+}
+
+void OgreAppLogic::fillCanvas(const std::string& _scriptFilename)
+{
+	Ogre::Canvas::V8Context canvasJS(mContext, mLogger);
+	canvasJS.execute(canvasJS.readScript(_scriptFilename));
+
+	mTexture->uploadTexture();
+}
+
+void OgreAppLogic::emptyCanvas()
+{
+	Ogre::Canvas::Context* ctx = mContext;
+	ctx->save();
+	ctx->fillStyle(Ogre::ColourValue::White);
+	ctx->fillRect(0, 0, 150, 200);
+	ctx->fillStyle(Ogre::ColourValue::Black);
+	ctx->restore();
+	mTexture->uploadTexture();
+}
+
+void OgreAppLogic::createCanvasOverlay()
+{
+	//create Texture
+	mTexture = new Ogre::Canvas::Texture("Canvas", 640, 480, true, 0);
+
+	//create Material
+	mTexture->createMaterial();
+
+	//create Overlay
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+	Ogre::Overlay* overlay = overlayManager.create("Canvas/Overlay");
+
+	mPanel = static_cast<Ogre::PanelOverlayElement*>(overlayManager.createOverlayElement("Panel", "Canvas/Panel"));
+	mPanel->setMetricsMode(Ogre::GMM_PIXELS);
+	mPanel->setMaterialName("Canvas");
+	mPanel->setDimensions(640, 480);
+	mPanel->setPosition(0, 0);
+	overlay->add2D(mPanel);
+
+	overlay->show();
 }

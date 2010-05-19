@@ -154,7 +154,7 @@ void OgreAppLogic::createCamera(void)
 
 void OgreAppLogic::createScene(void)
 {
-	mSceneMgr->setSkyBox(true, "Examples/Grid");
+	mSceneMgr->setSkyBox(true, "Examples/GridSkyBox");
 
 	Ogre::Entity* ent = mSceneMgr->createEntity("Sinbad.mesh");	//1x1_cube.mesh //Sinbad.mesh //axes.mesh
 
