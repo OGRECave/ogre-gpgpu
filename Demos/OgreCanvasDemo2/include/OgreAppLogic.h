@@ -71,10 +71,15 @@ protected:
 	// Canvas	
 	void createCanvasOverlay();
 	void updateCanvas();
-	void updateClockCanvas();
+	void updateClock1Canvas();
+	void updateClock2Canvas();
 	void updateSunCanvas();
-	Ogre::Canvas::Texture* mCanvasTextureClock;
-	Ogre::Canvas::Texture* mCanvasTextureSun;	
+	void createCanvasCube(void);
+	Ogre::ManualObject* createCubeMesh(const std::string& name, const std::string& matName);
+
+	Ogre::Canvas::Texture* mCanvasTextureClock1;
+	Ogre::Canvas::Texture* mCanvasTextureClock2;
+	Ogre::Canvas::Texture* mCanvasTextureSun;
 	Ogre::Image mSun;
 	Ogre::Image mEarth;
 	Ogre::Image mMoon;
