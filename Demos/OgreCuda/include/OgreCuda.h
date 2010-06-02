@@ -26,6 +26,7 @@
 #include <OgreTexture.h>
 #include <OgreRenderSystem.h>
 #include <OgreRenderWindow.h>
+#include "OgreCudaPrerequisites.h"
 
 #include <cuda_runtime.h>
 
@@ -45,7 +46,7 @@ namespace Ogre
 			VERTEXBUFFER_RESSOURCE
 		};
 
-		class Root
+		class _OgreCudaExport Root
 		{
 			public:
 				virtual void init() = 0;
@@ -84,7 +85,7 @@ namespace Ogre
 				cudaStream_t                     mCudaStream;
 		};
 
-		class Ressource
+		class _OgreCudaExport Ressource
 		{
 			friend class Root;	
 
@@ -104,7 +105,7 @@ namespace Ogre
 				cudaStream_t 	                    mCudaStream;
 		};
 
-		class TextureDeviceHandle
+		class _OgreCudaExport TextureDeviceHandle
 		{
 			friend class Ogre::Cuda::Texture;
 
@@ -121,14 +122,15 @@ namespace Ogre
 				cudaArray* mCudaArray;
 		};
 
-		class Texture : public Ressource
+		class _OgreCudaExport Texture : public Ressource
 		{
 			friend class TextureManager;	
 
 			public:
 				virtual void registerForCudaUse() = 0;
 				virtual void unregister();
-				void update(TextureDeviceHandle& mem);
+				void updateReading(TextureDeviceHandle& mem);
+				void updateWriting(TextureDeviceHandle& mem);
 
 				TextureDeviceHandle getDeviceHandle(unsigned int face, unsigned int mipmap);
 				Ogre::Vector2 getDimensions(unsigned int face, unsigned int mipmap);
@@ -140,11 +142,12 @@ namespace Ogre
 				void allocate();
 				unsigned int getIndex(unsigned int face, unsigned int mipmap);
 
+				int                              mPixelSizeInBytes;
 				Ogre::TexturePtr                 mTexture;
 				std::vector<TextureDeviceHandle> mDevicePtrs;
 		};
 
-		class VertexBuffer : public Ressource
+		class _OgreCudaExport VertexBuffer : public Ressource
 		{
 			friend class VertexBufferManager;
 
@@ -161,21 +164,21 @@ namespace Ogre
 				cudaArray*                          mCudaArray;
 		};
 
-		class TextureManager
+		class _OgreCudaExport TextureManager
 		{
 			public:
 				virtual Texture* createTexture(Ogre::TexturePtr texture) = 0;
 				virtual void destroyTexture(Texture* texture) = 0;				
 		};
 
-		class VertexBufferManager
+		class _OgreCudaExport VertexBufferManager
 		{
 			public:
 				virtual VertexBuffer* createVertexBuffer(Ogre::HardwareVertexBufferSharedPtr vertexBuffer) = 0;
 				virtual void destroyVertexBuffer(VertexBuffer* vertexBuffer) = 0;
 		};
 
-		struct DeviceProperties
+		struct _OgreCudaExport DeviceProperties
 		{
 			DeviceProperties();
 			DeviceProperties(const cudaDeviceProp& prop);
@@ -203,4 +206,4 @@ namespace Ogre
 		};
 	}
 }
-std::ostream& operator <<(std::ostream& output, const Ogre::Cuda::DeviceProperties& prop);
+_OgreCudaExport std::ostream& operator <<(std::ostream& output, const Ogre::Cuda::DeviceProperties& prop);

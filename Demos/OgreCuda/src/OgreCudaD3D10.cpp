@@ -20,6 +20,8 @@
 	THE SOFTWARE.
 */
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+
 #include "OgreCudaD3D10.h"
 
 #include <cuda.h>
@@ -98,3 +100,5 @@ void D3D10VertexBufferManager::destroyVertexBuffer(VertexBuffer* vertexBuffer)
 	delete (D3D10VertexBuffer*)vertexBuffer;
 	vertexBuffer = NULL;
 }
+
+#endif //if OGRE_PLATFORM == OGRE_PLATFORM_WIN32

@@ -21,9 +21,12 @@
 */
 
 #include "OgreCuda.h"
-#include "OgreCudaD3D9.h"
-#include "OgreCudaD3D10.h"
 #include "OgreCudaGL.h"
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+	#include "OgreCudaD3D9.h"
+	#include "OgreCudaD3D10.h"
+#endif
 
 #include <cuda_runtime.h>
 
@@ -103,10 +106,13 @@ Root* Root::createRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* ren
 
 	if (renderSystemName == "OpenGL Rendering Subsystem")
 		return new Ogre::Cuda::GLRoot(renderWindow);
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 	else if (renderSystemName == "Direct3D9 Rendering Subsystem")
 		return new Ogre::Cuda::D3D9Root(renderWindow);
 	else if (renderSystemName == "Direct3D10 Rendering Subsystem")
 		return new Ogre::Cuda::D3D10Root(renderWindow);
+#endif
 
 	return NULL;
 }
@@ -239,7 +245,9 @@ std::ostream& operator <<(std::ostream& output, const DeviceProperties& prop)
 
 Texture::Texture(Ogre::TexturePtr texture)
 : mTexture(texture)
-{}
+{
+	mPixelSizeInBytes = Ogre::PixelUtil::getNumElemBytes(mTexture->getFormat());
+}
 
 TextureDeviceHandle Texture::getDeviceHandle(unsigned int face, unsigned int mipmap)
 {
@@ -249,9 +257,20 @@ TextureDeviceHandle Texture::getDeviceHandle(unsigned int face, unsigned int mip
 	return mDevicePtrs[index];	
 }
 
-void Texture::update(TextureDeviceHandle& mem)
+void Texture::updateReading(TextureDeviceHandle& mem)
 {
-	cudaMemcpyToArray(mem.mCudaArray, 0, 0, mem.linearMemory, mem.pitch * mem.height, cudaMemcpyDeviceToDevice);
+	/*if (mTexture->getTextureType() == Ogre::TEX_TYPE_2D)
+		cudaMemcpy2DFromArray(mem.linearMemory, mem.pitch, mem.mCudaArray, 0, 0, mem.width*mPixelSizeInBytes, mem.height, cudaMemcpyDeviceToDevice);
+	else if (mTexture->getTextureType() == Ogre::TEX_TYPE_1D)*/
+		cudaMemcpyFromArray(mem.linearMemory, mem.mCudaArray, 0, 0, mem.pitch * mem.height, cudaMemcpyDeviceToDevice);
+}
+
+void Texture::updateWriting(TextureDeviceHandle& mem)
+{		
+	/*if (mTexture->getTextureType() == Ogre::TEX_TYPE_2D)
+		cudaMemcpy2DToArray(mem.mCudaArray, 0, 0, mem.linearMemory, mem.pitch, mem.width*mPixelSizeInBytes, mem.height, cudaMemcpyDeviceToDevice);
+	else if (mTexture->getTextureType() == Ogre::TEX_TYPE_1D)*/
+		cudaMemcpyToArray(mem.mCudaArray, 0, 0, mem.linearMemory, mem.pitch * mem.height, cudaMemcpyDeviceToDevice);
 }
 
 unsigned int Texture::getIndex(unsigned int face, unsigned int mipmap)
@@ -272,8 +291,7 @@ Ogre::Cuda::RessourceType Texture::getType()
 
 void Texture::allocate()
 {
-	size_t pixelSize = Ogre::PixelUtil::getNumElemBits(mTexture->getFormat()) / 8;
-
+	size_t pixelInBytes = Ogre::PixelUtil::getNumElemBytes(mTexture->getFormat());
 	for (unsigned int i=0; i<mTexture->getNumFaces(); ++i)
 	{
 		for (unsigned int j=0; j<mTexture->getNumMipmaps()+1; ++j)
@@ -284,7 +302,9 @@ void Texture::allocate()
 			
 			size_t pitch = 0;
 			void* linearMemory = NULL;
-			cudaMallocPitch(&linearMemory, &pitch, width * pixelSize, height);
+			//cudaMallocPitch(&linearMemory, &pitch, width * pixelInBytes, height);
+			cudaMalloc(&linearMemory, width*height*pixelInBytes);
+			pitch = width*pixelInBytes;
 			mDevicePtrs.push_back(Ogre::Cuda::TextureDeviceHandle(width, height, pitch, linearMemory));
 		}
 	}

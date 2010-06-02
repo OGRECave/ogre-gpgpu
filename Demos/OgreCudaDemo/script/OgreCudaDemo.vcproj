@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain_d.lib OIS_d.lib RenderSystem_Direct3D9_d.lib RenderSystem_Direct3D10_d.lib RenderSystem_GL_d.lib"
+				AdditionalDependencies="OgreMain_d.lib OIS_d.lib"
 				IgnoreDefaultLibraryNames=" LIBCMT.lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain.lib OIS.lib RenderSystem_Direct3D9.lib RenderSystem_Direct3D10.lib RenderSystem_GL.lib"
+				AdditionalDependencies="OgreMain.lib OIS.lib"
 				IgnoreDefaultLibraryNames=" LIBCMT.lib"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"

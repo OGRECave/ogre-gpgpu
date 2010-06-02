@@ -95,7 +95,7 @@ bool OgreAppLogic::update(Ogre::Real deltaTime)
 		mCudaTexture->map();
 		Ogre::Cuda::TextureDeviceHandle textureHandle = mCudaTexture->getDeviceHandle(0, 0);
 		cudaTextureUpdate(textureHandle.getPointer(), textureHandle.width, textureHandle.height, mTotalTime);		
-		mCudaTexture->update(textureHandle);
+		mCudaTexture->updateWriting(textureHandle);
 		mCudaTexture->unmap();
 
 		if (mCudaVertexBuffer)
@@ -116,8 +116,11 @@ void OgreAppLogic::shutdown(void)
 
 	mCudaTexture->unregister();
 	mCudaRoot->getTextureManager()->destroyTexture(mCudaTexture);
-	mCudaVertexBuffer->unregister();
-	mCudaRoot->getVertexBufferManager()->destroyVertexBuffer(mCudaVertexBuffer);
+	if (mCudaVertexBuffer) 
+	{
+		mCudaVertexBuffer->unregister();
+		mCudaRoot->getVertexBufferManager()->destroyVertexBuffer(mCudaVertexBuffer);
+	}
 	mCudaRoot->shutdown();
 	Ogre::Cuda::Root::destroyRoot(mCudaRoot);
 	mOgreTexture.setNull();

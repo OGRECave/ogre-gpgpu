@@ -19,7 +19,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			InheritedPropertySheets=".\OgreCuda.vsprops;..\..\Ogre.vsprops"
 			CharacterSet="2"
 			>
@@ -42,6 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="OGRE_CUDA_DLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -58,10 +59,15 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
+				Name="VCLinkerTool"
+				AdditionalDependencies="OgreMain_d.lib RenderSystem_Direct3D9_d.lib RenderSystem_Direct3D10_d.lib RenderSystem_GL_d.lib"
+				DelayLoadDLLs="RenderSystem_GL_d.dll;RenderSystem_Direct3D9_d.dll;RenderSystem_Direct3D10_d.dll"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -73,6 +79,9 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -80,7 +89,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			InheritedPropertySheets=".\OgreCuda.vsprops;..\..\Ogre.vsprops"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -105,6 +114,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="OGRE_CUDA_DLL"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -120,10 +130,15 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
+				Name="VCLinkerTool"
+				AdditionalDependencies="OgreMain.lib RenderSystem_Direct3D9.lib RenderSystem_Direct3D10.lib RenderSystem_GL.lib"
+				DelayLoadDLLs="RenderSystem_GL.dll;RenderSystem_Direct3D9.dll;RenderSystem_Direct3D10.dll"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -133,6 +148,9 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -179,6 +197,10 @@
 			>
 			<File
 				RelativePath="..\include\OgreCuda.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\OgreCudaPrerequisites.h"
 				>
 			</File>
 			<Filter
