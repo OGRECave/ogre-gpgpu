@@ -20,6 +20,8 @@
 	THE SOFTWARE.
 */
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+
 #include "OgreOpenCLDX10.h"
 
 using namespace Ogre::OpenCL;
@@ -133,3 +135,5 @@ void D3D10VertexBufferManager::destroyVertexBuffer(VertexBuffer* vertexBuffer)
 	delete (D3D10VertexBuffer*) vertexBuffer;
 	vertexBuffer = NULL;
 }
+
+#endif //if OGRE_PLATFORM == OGRE_PLATFORM_WIN32

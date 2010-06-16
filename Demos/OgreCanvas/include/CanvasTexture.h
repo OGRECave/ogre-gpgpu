@@ -29,7 +29,7 @@ namespace Ogre
 {
 	namespace Canvas
 	{
-		class Texture : public DynamicTexture
+		class _OgreCanvasExport Texture : public DynamicTexture
 		{
 			public:
 				Texture(const std::string& _textureName, unsigned int _width, unsigned int _height, bool _enableAlpha = true, int _mipmaps = 0);

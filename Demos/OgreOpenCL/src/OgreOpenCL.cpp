@@ -48,10 +48,12 @@ Root* Root::createRoot(Ogre::RenderWindow* renderWindow, Ogre::RenderSystem* ren
 
 	if (renderSystemName == "OpenGL Rendering Subsystem")
 		return new Ogre::OpenCL::GLRoot(renderWindow);
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 	else if (renderSystemName == "Direct3D9 Rendering Subsystem")
 		return new Ogre::OpenCL::D3D9Root(renderWindow, renderSystem);
 	else if (renderSystemName == "Direct3D10 Rendering Subsystem")
 		return new Ogre::OpenCL::D3D10Root(renderWindow, renderSystem);
+#endif
 	return NULL;
 }
 

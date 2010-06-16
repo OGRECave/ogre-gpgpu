@@ -24,12 +24,13 @@
 
 #include <fstream>
 #include <string>
+#include "CanvasV8Prerequisites.h"
 
 namespace Ogre
 {
 	namespace Canvas
 	{
-		class Logger
+		class _OgreCanvasV8Export Logger
 		{
 			public:
 				Logger(const std::string& _filename);		

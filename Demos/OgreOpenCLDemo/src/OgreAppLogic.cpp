@@ -67,7 +67,7 @@ bool OgreAppLogic::init(void)
 
 	// load program source
 	size_t program_length;
-	char *programSource = oclLoadProgSource("C:\\AnimatedTexture.cl", "", &program_length);
+	char *programSource = oclLoadProgSource("AnimatedTexture.cl", "", &program_length);
 	
 	// create the program
 	cpProgram = clCreateProgramWithSource(*mCLRoot->getContext(), 1, (const char**) &programSource, &program_length, &error);

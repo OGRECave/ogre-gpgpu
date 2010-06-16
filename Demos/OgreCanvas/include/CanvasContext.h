@@ -23,6 +23,7 @@
 #pragma once
 
 #include <Ogre.h> //must be include before skia otherwise you get error with std::min & std::max (NOMINMAX definition in skia ?)
+#include "CanvasPrerequisites.h"
 
 #ifndef SK_IGNORE_STDINT_DOT_H
 #define SK_IGNORE_STDINT_DOT_H
@@ -121,7 +122,7 @@ namespace Ogre
 			GradientType_RadialWithFocalPoint
 		};
 
-		class TextMetrics
+		class _OgreCanvasExport TextMetrics
 		{
 			public:
 				TextMetrics(float xBearing, float yBearing, float width, float height, float xAdvance, float yAdvance);
@@ -136,7 +137,7 @@ namespace Ogre
 				Ogre::Real yAdvance;
 		};
 
-		class Colour //unused
+		class _OgreCanvasExport Colour //unused
 		{
 			public:
 				Colour(const Ogre::ColourValue& color);
@@ -151,7 +152,7 @@ namespace Ogre
 
 		typedef std::pair<Ogre::Real, Ogre::ColourValue> ColorStop;
 
-		class Gradient
+		class _OgreCanvasExport Gradient
 		{
 			
 			public:
@@ -179,7 +180,7 @@ namespace Ogre
 
 		};
 
-		class Pattern
+		class _OgreCanvasExport Pattern
 		{
 			public:
 				Pattern(const Ogre::Image& img, Repetition repeat);
@@ -192,7 +193,7 @@ namespace Ogre
 				SkShader* mShader;
 		};
 
-		class ImageData
+		class _OgreCanvasExport ImageData
 		{
 			public:
 				ImageData();
@@ -205,7 +206,7 @@ namespace Ogre
 				unsigned char* mData;
 		};
 
-		class State 
+		class _OgreCanvasExport State 
 		{
 			public:
 				State();
@@ -251,7 +252,7 @@ namespace Ogre
 				//bool m_realizedFont;
 		};
 
-		class Context
+		class _OgreCanvasExport Context
 		{
 			public:
 				Context(unsigned int _width, unsigned int _height, bool _enableAlpha = true);
@@ -429,7 +430,7 @@ namespace Ogre
 				std::stack<State> mStates;
 		};
 
-		class ColourConverter
+		class _OgreCanvasExport ColourConverter
 		{
 			public:
 				static Ogre::ColourValue fromHexa(const std::string& text);

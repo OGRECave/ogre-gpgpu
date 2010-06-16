@@ -25,8 +25,9 @@
 #include <string>
 #include <OgreTexture.h>
 #include <OgreResource.h>
+#include "CanvasPrerequisites.h"
 
-class DynamicTexture : public Ogre::ManualResourceLoader
+class _OgreCanvasExport DynamicTexture : public Ogre::ManualResourceLoader
 {
 	public:
 		DynamicTexture(const std::string& _textureName, unsigned int _width, unsigned int _height, bool _enableAlpha = true, int _mipmaps = 0);

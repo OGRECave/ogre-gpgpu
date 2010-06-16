@@ -22,38 +22,16 @@
 
 #pragma once
 
-#include "CanvasContext.h"
-#include "CanvasLogger.h"
-#include "CanvasV8Prerequisites.h"
-
-#include "v8.h"
-
-namespace Ogre
-{
-	namespace Canvas
-	{
-		class _OgreCanvasV8Export V8Context
-		{
-			public:
-				V8Context(Canvas::Context* context, Canvas::Logger* console = NULL);
-				~V8Context();
-
-				void execute(const std::string& javascript);
-				static std::string readScript(const std::string& filename);
-
-				//shouldn't be public
-				v8::Persistent<v8::FunctionTemplate> mCanvasGradientTemplate;
-				v8::Persistent<v8::FunctionTemplate> mCanvasPatternTemplate;
-				v8::Persistent<v8::FunctionTemplate> mImageTemplate;
-				v8::Persistent<v8::FunctionTemplate> mConsoleTemplate;
-
-			protected:
-				void bindCanvasContext();
-
-				Canvas::Context* mContext;
-				Canvas::Logger*  mLogger;
-
-				v8::Persistent<v8::Context> mV8Context;
-		};
-	}
-}
+#if defined(OGRE_CANVAS_LIB)
+	#define _OgreCanvasExport
+#else
+	#if defined(OGRE_CANVAS_DLL)
+		#define _OgreCanvasExport __declspec(dllexport)
+	#else
+		#if defined( __MINGW32__ )
+			#define _OgreCanvasExport
+		#else
+			#define _OgreCanvasExport __declspec(dllimport)
+		#endif
+	#endif
+#endif

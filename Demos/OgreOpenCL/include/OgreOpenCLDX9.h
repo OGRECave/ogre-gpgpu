@@ -22,6 +22,8 @@
 
 #include "OgreOpenCL.h"
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+
 #include <OgreD3D9RenderSystem.h>
 #include <OgreD3D9Texture.h>
 #include <OgreD3D9HardwareVertexBuffer.h>
@@ -63,3 +65,5 @@ namespace Ogre
 		};
 	}
 }
+
+#endif //if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
