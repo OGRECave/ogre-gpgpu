@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="OgreGPGPU"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(OgreGPGPU)&quot;;&quot;$(OGRE_HOME)\include\OGRE\RenderSystems\Direct3D9&quot;;&quot;$(OGRE_HOME)\include\OGRE\RenderSystems\Direct3D10&quot;"
+	/>
+	<UserMacro
+		Name="OgreGPGPU"
+		Value="$(SolutionDir)\OgreGPGPU\include"
+	/>
+</VisualStudioPropertySheet>

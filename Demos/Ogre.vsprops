@@ -14,7 +14,7 @@
 	/>
 	<UserMacro
 		Name="OGRE_HOME"
-		Value="D:\dev\OgreDev\Ogre1.7sdk"
+		Value="D:\dev\OgreDev\ogre1.7.sdk"
 		PerformEnvironmentSet="true"
 	/>
 </VisualStudioPropertySheet>
