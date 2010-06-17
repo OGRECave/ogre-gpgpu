@@ -1,0 +1,8 @@
+void GPGPUDemo_fp(
+	float2 uv			   : TEXCOORD0,
+	uniform sampler2D tex0 : register(s0),
+	out float4 result	   : COLOR	
+)
+{
+	result = float4(uv.x, uv.y, 1.0, 1.0);
+}

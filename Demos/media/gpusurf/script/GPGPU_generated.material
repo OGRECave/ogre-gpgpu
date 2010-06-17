@@ -1,0 +1,695 @@
+/*
+	Copyright (c) 2010 ASTRE Henri (http://www.visual-experiments.com)
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+*/
+
+//	MIPMAP	0
+
+material GPGPU/RGB2Gray/Mipmap0
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_rgb2gray_fp
+			{}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture WebcamVideoTexture
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianX/Mipmap0
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_x_fp
+			{
+				param_named octave float 0.0
+			}
+
+			texture_unit
+			{
+				tex_border_colour 1.0 0.0 0.0 1.0
+				tex_address_mode wrap
+				texture GPGPU/Gray
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianY/Mipmap0
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_y_fp
+			{
+				param_named octave float 0.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gx
+			}
+		}
+	}
+}
+
+material GPGPU/Hessian/Mipmap0
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_hessian_fp
+			{
+				param_named octave float 0.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gy
+			}
+		}
+	}
+}
+
+material GPGPU/NMS/Mipmap0
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_nms_first_fp
+			{
+				param_named octave float 0.0
+				param_named threshold float 0.05
+			}
+
+			texture_unit
+			{
+				filtering none
+				tex_address_mode clamp
+				texture GPGPU/H
+			}
+		}
+	}
+}
+
+//	MIPMAP	1
+
+material GPGPU/DownSampling/Mipmap1
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_downsampling_fp
+			{
+				param_named octave float 1.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gy
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianX/Mipmap1
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_x_fp
+			{
+				param_named octave float 1.0
+			}
+
+			texture_unit
+			{
+				tex_border_colour 1.0 0.0 0.0 1.0
+				tex_address_mode wrap
+				texture GPGPU/Gray
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianY/Mipmap1
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_y_fp
+			{
+				param_named octave float 1.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gx
+			}
+		}
+	}
+}
+
+material GPGPU/Hessian/Mipmap1
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_hessian_fp
+			{
+				param_named octave float 1.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gy
+			}
+		}
+	}
+}
+
+material GPGPU/NMS/Mipmap1
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_nms_other_fp
+			{
+				param_named octave float 1.0
+				param_named threshold float 0.05
+			}
+
+			texture_unit
+			{
+				filtering none
+				tex_address_mode clamp
+				texture GPGPU/H
+			}
+		}
+	}
+}
+
+//	MIPMAP	2
+
+material GPGPU/DownSampling/Mipmap2
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_downsampling_fp
+			{
+				param_named octave float 2.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gy
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianX/Mipmap2
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_x_fp
+			{
+				param_named octave float 2.0
+			}
+
+			texture_unit
+			{
+				tex_border_colour 1.0 0.0 0.0 1.0
+				tex_address_mode wrap
+				texture GPGPU/Gray
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianY/Mipmap2
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_y_fp
+			{
+				param_named octave float 2.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gx
+			}
+		}
+	}
+}
+
+material GPGPU/Hessian/Mipmap2
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_hessian_fp
+			{
+				param_named octave float 2.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gy
+			}
+		}
+	}
+}
+
+material GPGPU/NMS/Mipmap2
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_nms_other_fp
+			{
+				param_named octave float 2.0
+				param_named threshold float 0.05
+			}
+
+			texture_unit
+			{
+				filtering none
+				tex_address_mode clamp
+				texture GPGPU/H
+			}
+		}
+	}
+}
+
+//	MIPMAP	3
+
+material GPGPU/DownSampling/Mipmap3
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_downsampling_fp
+			{
+				param_named octave float 3.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gy
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianX/Mipmap3
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_x_fp
+			{
+				param_named octave float 3.0
+			}
+
+			texture_unit
+			{
+				tex_border_colour 1.0 0.0 0.0 1.0
+				tex_address_mode wrap
+				texture GPGPU/Gray
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianY/Mipmap3
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_y_fp
+			{
+				param_named octave float 3.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gx
+			}
+		}
+	}
+}
+
+material GPGPU/Hessian/Mipmap3
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_hessian_fp
+			{
+				param_named octave float 3.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gy
+			}
+		}
+	}
+}
+
+material GPGPU/NMS/Mipmap3
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_nms_other_fp
+			{
+				param_named octave float 3.0
+				param_named threshold float 0.05
+			}
+
+			texture_unit
+			{
+				filtering none
+				tex_address_mode clamp
+				texture GPGPU/H
+			}
+		}
+	}
+}
+
+//	MIPMAP	4
+
+material GPGPU/DownSampling/Mipmap4
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_downsampling_fp
+			{
+				param_named octave float 4.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gy
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianX/Mipmap4
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_x_fp
+			{
+				param_named octave float 4.0
+			}
+
+			texture_unit
+			{
+				tex_border_colour 1.0 0.0 0.0 1.0
+				tex_address_mode wrap
+				texture GPGPU/Gray
+			}
+		}
+	}
+}
+
+material GPGPU/GaussianY/Mipmap4
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_gaussian_y_fp
+			{
+				param_named octave float 4.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gx
+			}
+		}
+	}
+}
+
+material GPGPU/Hessian/Mipmap4
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_hessian_fp
+			{
+				param_named octave float 4.0
+			}
+
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture GPGPU/Gy
+			}
+		}
+	}
+}
+
+material GPGPU/NMS/Mipmap4
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write off
+
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{}
+
+			fragment_program_ref GPGPU_nms_other_fp
+			{
+				param_named octave float 4.0
+				param_named threshold float 0.05
+			}
+
+			texture_unit
+			{
+				filtering none
+				tex_address_mode clamp
+				texture GPGPU/H
+			}
+		}
+	}
+}
+

@@ -1,0 +1,492 @@
+/*
+	Copyright (c) 2010 ASTRE Henri (http://www.visual-experiments.com)
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+*/
+
+//	MIPMAP	0
+
+compositor GPGPU/RGB2Gray/Mipmap0
+{
+	technique
+	{
+		target_output
+		{
+			input none
+         
+			pass render_quad
+			{
+				material GPGPU/RGB2Gray/Mipmap0
+			}
+		}
+	}
+}
+
+compositor GPGPU/GaussianX/Mipmap0
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianX/Mipmap0
+            }
+        }
+    }
+}
+
+compositor GPGPU/GaussianY/Mipmap0
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianY/Mipmap0
+            }
+        }
+    }
+}
+
+compositor GPGPU/Hessian/Mipmap0
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/Hessian/Mipmap0
+            }
+        }
+    }
+}
+
+compositor GPGPU/NMS/Mipmap0
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/NMS/Mipmap0
+            }
+        }
+    }
+}
+
+//	MIPMAP	1
+
+compositor GPGPU/DownSampling/Mipmap1
+{
+    technique
+    {
+        target_output
+        {
+            input none
+            
+            pass render_quad
+            {
+                material GPGPU/DownSampling/Mipmap1
+            }
+        }
+    }
+}
+
+compositor GPGPU/GaussianX/Mipmap1
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianX/Mipmap1
+            }
+        }
+    }
+}
+
+compositor GPGPU/GaussianY/Mipmap1
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianY/Mipmap1
+            }
+        }
+    }
+}
+
+compositor GPGPU/Hessian/Mipmap1
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/Hessian/Mipmap1
+            }
+        }
+    }
+}
+
+compositor GPGPU/NMS/Mipmap1
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/NMS/Mipmap1
+            }
+        }
+    }
+}
+
+//	MIPMAP	2
+
+compositor GPGPU/DownSampling/Mipmap2
+{
+    technique
+    {
+        target_output
+        {
+            input none
+            
+            pass render_quad
+            {
+                material GPGPU/DownSampling/Mipmap2
+            }
+        }
+    }
+}
+
+compositor GPGPU/GaussianX/Mipmap2
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianX/Mipmap2
+            }
+        }
+    }
+}
+
+compositor GPGPU/GaussianY/Mipmap2
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianY/Mipmap2
+            }
+        }
+    }
+}
+
+compositor GPGPU/Hessian/Mipmap2
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/Hessian/Mipmap2
+            }
+        }
+    }
+}
+
+compositor GPGPU/NMS/Mipmap2
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/NMS/Mipmap2
+            }
+        }
+    }
+}
+
+//	MIPMAP	3
+
+compositor GPGPU/DownSampling/Mipmap3
+{
+    technique
+    {
+        target_output
+        {
+            input none
+            
+            pass render_quad
+            {
+                material GPGPU/DownSampling/Mipmap3
+            }
+        }
+    }
+}
+
+compositor GPGPU/GaussianX/Mipmap3
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianX/Mipmap3
+            }
+        }
+    }
+}
+
+compositor GPGPU/GaussianY/Mipmap3
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianY/Mipmap3
+            }
+        }
+    }
+}
+
+compositor GPGPU/Hessian/Mipmap3
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/Hessian/Mipmap3
+            }
+        }
+    }
+}
+
+compositor GPGPU/NMS/Mipmap3
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/NMS/Mipmap3
+            }
+        }
+    }
+}
+
+//	MIPMAP	4
+
+compositor GPGPU/DownSampling/Mipmap4
+{
+    technique
+    {
+        target_output
+        {
+            input none
+            
+            pass render_quad
+            {
+                material GPGPU/DownSampling/Mipmap4
+            }
+        }
+    }
+}
+
+compositor GPGPU/GaussianX/Mipmap4
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianX/Mipmap4
+            }
+        }
+    }
+}
+
+compositor GPGPU/GaussianY/Mipmap4
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/GaussianY/Mipmap4
+            }
+        }
+    }
+}
+
+compositor GPGPU/Hessian/Mipmap4
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/Hessian/Mipmap4
+            }
+        }
+    }
+}
+
+compositor GPGPU/NMS/Mipmap4
+{
+    technique
+    {
+        target_output
+        {
+            // Start with clear output
+            input none
+            
+            // Draw a fullscreen quad with the black and white image
+            pass render_quad
+            {
+                // Renders a fullscreen quad with a material
+                material GPGPU/NMS/Mipmap4
+            }
+        }
+    }
+}
+

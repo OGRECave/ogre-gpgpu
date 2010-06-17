@@ -17,3 +17,18 @@ ofVideoInput :
 - resulting structure : 
 			- $(SolutionDir)\Dependencies\ofVideoInput\include\videoInput.h
 			- $(SolutionDir)\Dependencies\ofVideoInput\lib\videoInput.lib
+
+DevIL :
+-------
+- download "DevIL 1.7.8 SDK for 32-bit Windows" from http://openil.sourceforge.net/download.php
+- unzip in $(SolutionDir)\Dependencies\DevIL\
+- resulting structure :
+                       - $(SolutionDir)\Dependencies\DevIL\lib\DevIL.dll
+
+cudpp v1.1.1 :
+--------------
+- download "cudpp_src_1.1.1.zip" from http://code.google.com/p/cudpp/downloads/list
+- unzip in $(SolutionDir)\Dependencies\
+- resulting structure : (you need to rename "cudpp_src_1.1.1" in "cudpp_1.1.1")
+                       - $(SolutionDir)\Dependencies\cudpp_1.1.1\include\cudpp.h
+                       - $(SolutionDir)\Dependencies\cudpp_1.1.1\lib\cudpp32.dll
