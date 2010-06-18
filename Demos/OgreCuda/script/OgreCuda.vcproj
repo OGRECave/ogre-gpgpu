@@ -200,6 +200,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\OgreCudaDoxygen.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\OgreCudaPrerequisites.h"
 				>
 			</File>
