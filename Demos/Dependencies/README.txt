@@ -32,3 +32,16 @@ cudpp v1.1.1 :
 - resulting structure : (you need to rename "cudpp_src_1.1.1" in "cudpp_1.1.1")
                        - $(SolutionDir)\Dependencies\cudpp_1.1.1\include\cudpp.h
                        - $(SolutionDir)\Dependencies\cudpp_1.1.1\lib\cudpp32.dll
+
+jpeg:
+-----
+- I have taken the version included with Bundler 0.4 (http://phototour.cs.washington.edu/bundler/)
+- resulting structure :
+					   - $(SolutionDir)\Dependencies\jpeg\src\jversion.h		
+
+JSON Spirit : 
+-------------
+- download "json_spirit_v4.03.zip" from http://www.codeproject.com/KB/recipes/JSON_Spirit.aspx
+- unzip in $(SolutionDir)\Dependencies\
+- resulting structure : (you need to rename "json_spirit_v4.03" in "json_spirit")
+					   - $(SolutionDir)\Dependencies\json_spirit\json.sln
