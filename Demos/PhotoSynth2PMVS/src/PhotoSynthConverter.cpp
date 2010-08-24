@@ -43,12 +43,11 @@ bool Converter::convert(const std::string& url)
 
 	std::cout << "Preparing PhotoSynth " << guid << " for PMVS2" <<std::endl;
 
-	Parser parser(guid);
-	parser.parseSoap();
-	parser.parseJson();
-
 	if (!bf::exists(guid))
+	{
+		std::cerr << "Error: " << guid << " folder missing: you need to run PhotoSynthDownloader first !" << std::endl;
 		return false;
+	}
 
 	std::stringstream path;
 	path << guid << "/txt";
@@ -79,6 +78,17 @@ bool Converter::convert(const std::string& url)
 		return false;
 	}
 
+	path.str("");
+	path << guid << "/" << Parser::soapFilename;
+	if (!bf::exists(path.str()))
+	{
+		std::cerr << "Error: " << Parser::soapFilename << " missing: you need to run PhotoSynthDownloader first !" << std::endl;
+		return false;
+	}
+
+	Parser parser(guid);
+	parser.parseSoap();
+	parser.parseJson();
 	parser.parserBin();
 	savePly(guid, &parser);
 

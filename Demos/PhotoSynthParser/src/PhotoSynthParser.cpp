@@ -111,38 +111,46 @@ void Parser::parseJson()
 		std::stringstream index; 
 		index << i;
 		
-		json_spirit::mObject current = root["x"].get_obj()[index.str()].get_obj();		
-		int nbBinFile = current["k"].get_array()[1].get_int();
-		json_spirit::mObject images = current["r"].get_obj();
+		json_spirit::mObject current = root["x"].get_obj()[index.str()].get_obj();
 
-		mCoordSystems.push_back(CoordSystem(nbBinFile));
-		
-		for (unsigned int j=0; j<images.size(); ++j)
+		if (current["k"].is_null())
 		{
-			std::stringstream iteratorIndex;
-			iteratorIndex << j;
+			mCoordSystems.push_back(CoordSystem(0));
+		}
+		else
+		{
+			int nbBinFile = current["k"].get_array()[1].get_int();
+			json_spirit::mObject images = current["r"].get_obj();
 
-			json_spirit::mArray infos = images[iteratorIndex.str()].get_obj()["j"].get_array();
-			int index    = infos[0].get_int();
-			double x     = infos[1].get_real();
-			double y     = infos[2].get_real();
-			double z     = infos[3].get_real();
-			double qx    = infos[4].get_real();
-			double qy    = infos[5].get_real();
-			double qz    = infos[6].get_real();
-			double qw    = sqrt(1-qx*qx-qy*qy-qz*qz);
-			double ratio = infos[7].get_real();
-			double focal = infos[8].get_real();
+			mCoordSystems.push_back(CoordSystem(nbBinFile));
 
-			json_spirit::mArray distorts = images[iteratorIndex.str()].get_obj()["f"].get_array();
-			double distort1 = distorts[0].get_real();
-			double distort2 = distorts[1].get_real();
+			for (unsigned int j=0; j<images.size(); ++j)
+			{
+				std::stringstream iteratorIndex;
+				iteratorIndex << j;
 
-			Ogre::Quaternion orientation((float)qw, (float)qx, (float)qy, (float)qz);
-			Ogre::Vector3 position((float)x, (float)y, (float)z);
-			Camera cam(index, orientation, position, (float)focal, (float)distort1, (float)distort2, (float)ratio);
+				json_spirit::mArray infos = images[iteratorIndex.str()].get_obj()["j"].get_array();
+				int index    = infos[0].get_int();
+				double x     = infos[1].get_real();
+				double y     = infos[2].get_real();
+				double z     = infos[3].get_real();
+				double qx    = infos[4].get_real();
+				double qy    = infos[5].get_real();
+				double qz    = infos[6].get_real();
+				double qw    = sqrt(1-qx*qx-qy*qy-qz*qz);
+				double ratio = infos[7].get_real();
+				double focal = infos[8].get_real();
 
-			mCoordSystems[i].cameras.push_back(cam);
+				json_spirit::mArray distorts = images[iteratorIndex.str()].get_obj()["f"].get_array();
+				double distort1 = distorts[0].get_real();
+				double distort2 = distorts[1].get_real();
+
+				Ogre::Quaternion orientation((float)qw, (float)qx, (float)qy, (float)qz);
+				Ogre::Vector3 position((float)x, (float)y, (float)z);
+				Camera cam(index, orientation, position, (float)focal, (float)distort1, (float)distort2, (float)ratio);
+
+				mCoordSystems[i].cameras.push_back(cam);
+			}
 		}
 	}
 }

@@ -111,7 +111,7 @@ bool Downloader::download(const std::string& url, bool downloadThumb)
 	//stats
 	std::cout << "PhotoSynth composed of " << parser.getJsonInfo().thumbs.size() << " images and " << parser.getNbCoordSystem() << " CoordSystems:" << std::endl;
 	for (unsigned int i=0; i<parser.getNbCoordSystem(); ++i)
-		std::cout << "[" << i<< "]: " << parser.getNbCamera(i) << " cameras, " << parser.getNbVertex(i) << "points" <<std::endl;
+		std::cout << "[" << i<< "]: " << parser.getNbCamera(i) << " cameras, " << parser.getNbVertex(i) << " points" <<std::endl;
 
 	if (downloadThumb)
 		downloadAllThumbFiles(guid, parser.getJsonInfo());
