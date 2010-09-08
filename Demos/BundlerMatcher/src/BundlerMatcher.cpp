@@ -1,6 +1,26 @@
-#include "BundlerMatcher.h"
+/*
+	Copyright (c) 2010 ASTRE Henri (http://www.visual-experiments.com)
 
-//#include "FreeImage.h"
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+*/
+
+#include "BundlerMatcher.h"
 
 #include <iostream>
 #include <string>
@@ -76,6 +96,7 @@ void BundlerMatcher::open(const std::string& inputFilename, const std::string& o
 	}
 	clearScreen();
 	std::cout << "[Sift Feature extracted]"<<std::endl;
+	saveVector();
 
 	delete mSift;
 	mSift = NULL;
@@ -102,6 +123,7 @@ void BundlerMatcher::open(const std::string& inputFilename, const std::string& o
 	mMatcher = NULL;
 
 	saveMatches(outMatchFilename);
+	saveMatrix();
 }
 
 bool BundlerMatcher::parseListFile(const std::string& filename)
@@ -223,5 +245,46 @@ void BundlerMatcher::saveMatches(const std::string& filename)
 			output << indexA << " " <<indexB << std::endl;
 		}
 	}
+	output.close();
+}
+
+void BundlerMatcher::saveMatrix()
+{
+	std::ofstream output;
+	output.open("matrix.txt");
+
+	int nbFile = (int) mFilenames.size();
+
+	std::vector<int> matrix(nbFile*nbFile);
+
+	for (int i=0; i<nbFile*nbFile; ++i)
+		matrix[i] = 0;
+
+	for (unsigned int i=0; i<mMatchInfos.size(); ++i)
+	{
+		int indexA = mMatchInfos[i].indexA;
+		int indexB = mMatchInfos[i].indexB;
+		int nbMatch = (int) mMatchInfos[i].matches.size();
+		matrix[indexA*nbFile+indexB] = nbMatch;
+	}
+
+	for (int i=0; i<nbFile; ++i)
+	{
+		for (int j=0; j<nbFile; ++j)	
+		{
+			output << matrix[i*nbFile+j] << ";";
+		}
+		output <<std::endl;
+	}
+
+	output.close();
+}
+
+void BundlerMatcher::saveVector()
+{
+	std::ofstream output;
+	output.open("vector.txt");
+	for (unsigned int i=0; i<mFeatureInfos.size(); ++i)
+		output <<mFilenames[i] << ";"<<mFeatureInfos[i].points.size() << std::endl;
 	output.close();
 }
