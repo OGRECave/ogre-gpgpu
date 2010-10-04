@@ -81,10 +81,15 @@ void Parser::parseJson()
 	json_spirit::mObject obj = json.get_obj();
 	double version = obj["_json_synth"].get_real();
 
-	json_spirit::mObject root = obj["l"].get_obj()[mGuid].get_obj();
+	json_spirit::mObject root;
+	if (obj["l"].get_obj().find(mGuid) == obj["l"].get_obj().end()) //http://photosynth.net/view.aspx?cid=fea8cfff-2c8c-4317-8cec-06169f1bd367
+		root = obj["l"].get_obj()[""].get_obj();
+	else
+		root = obj["l"].get_obj()[mGuid].get_obj(); //new synth
+
 	int nbImage         = root["_num_images"].get_int();
 	int nbCoordSystem   = root["_num_coord_systems"].get_int();
-	std::string license = "";//root["c"].get_str();	
+	std::string license = "";
 
 	mJsonInfo.version = version;
 	mJsonInfo.license = license;
