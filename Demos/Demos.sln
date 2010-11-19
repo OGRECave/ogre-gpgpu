@@ -160,6 +160,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreKinectDemo", "OgreKinec
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kinect", "Dependencies\kinect\script\kinect.vcproj", "{402034BC-239A-430A-ABC5-2FAC5C34E860}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreKinectDoxygen", "OgreKinect\script\OgreKinectDoxygen.vcproj", "{477DD9A7-E9DA-4F16-A77A-62ED2DF840B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -394,6 +396,12 @@ Global
 		{402034BC-239A-430A-ABC5-2FAC5C34E860}.Release|Win32.ActiveCfg = Release|Win32
 		{402034BC-239A-430A-ABC5-2FAC5C34E860}.Release|Win32.Build.0 = Release|Win32
 		{402034BC-239A-430A-ABC5-2FAC5C34E860}.Release|x64.ActiveCfg = Release|Win32
+		{477DD9A7-E9DA-4F16-A77A-62ED2DF840B5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{477DD9A7-E9DA-4F16-A77A-62ED2DF840B5}.Debug|Win32.Build.0 = Debug|Win32
+		{477DD9A7-E9DA-4F16-A77A-62ED2DF840B5}.Debug|x64.ActiveCfg = Debug|Win32
+		{477DD9A7-E9DA-4F16-A77A-62ED2DF840B5}.Release|Win32.ActiveCfg = Release|Win32
+		{477DD9A7-E9DA-4F16-A77A-62ED2DF840B5}.Release|Win32.Build.0 = Release|Win32
+		{477DD9A7-E9DA-4F16-A77A-62ED2DF840B5}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -436,5 +444,6 @@ Global
 		{5213E23D-9AAD-44DD-8FCD-74A3362ED922} = {2176C0A5-7E96-4748-8BCF-AFCD6462CE8C}
 		{6920B232-4292-4558-A0A2-293B11D76584} = {2176C0A5-7E96-4748-8BCF-AFCD6462CE8C}
 		{402034BC-239A-430A-ABC5-2FAC5C34E860} = {2176C0A5-7E96-4748-8BCF-AFCD6462CE8C}
+		{477DD9A7-E9DA-4F16-A77A-62ED2DF840B5} = {2176C0A5-7E96-4748-8BCF-AFCD6462CE8C}
 	EndGlobalSection
 EndGlobal
