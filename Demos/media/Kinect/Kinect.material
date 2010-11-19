@@ -1,0 +1,6 @@
+fragment_program KinectDepth cg
+{
+	source Kinect.cg
+	entry_point KinectDepthInColor
+	profiles ps_3_0 fp30
+}

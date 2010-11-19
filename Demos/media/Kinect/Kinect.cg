@@ -1,0 +1,78 @@
+void KinectDepth(
+	float2 uv			   : TEXCOORD0,
+	uniform sampler2D tex0 : register(s0),
+	out float4 result	   : COLOR	
+)
+{
+	float value = tex2D(tex0, uv).x;
+	value *= 65535.0; //range 0..2047
+
+	if (value == 2047)
+	{
+		result = float4(1.0, 0.0, 0.0, 1.0); //just for testing
+	}
+	else if (value>0 && value != 2047.0)
+	{
+		value = 1.0f/(-0.00307f * value + 3.33f);
+		result = float4(value, value, value, 1.0);
+	}
+	else
+	{
+		result = float4(1.0, 1.0, 1.0, 1.0);
+	}
+}
+
+float4 depthToRGB(float hue)
+{
+	const float4 RED     = float4(1.0, 0.0, 0.0, 1.0);
+	const float4 YELLOW  = float4(1.0, 1.0, 0.0, 1.0);
+	const float4 GREEN   = float4(0.0, 1.0, 0.0, 1.0);
+	const float4 CYAN    = float4(0.0, 1.0, 1.0, 1.0);
+	const float4 BLUE    = float4(0.0, 0.0, 1.0, 1.0);
+	const float4 MAGENTA = float4(1.0, 0.0, 1.0, 1.0);
+
+	// cycle hue in range 0..1
+	//hue = hue - floor(hue);
+	
+	float hi = floor(6 * hue);
+	float h = 6 * hue - hi;
+
+	if (hi < 0.5)
+		return lerp(RED, YELLOW, h);
+	else if (hi < 1.5)
+		return lerp(YELLOW, GREEN, h);
+	else if (hi < 2.5)
+		return lerp(GREEN, CYAN, h);
+	else if (hi < 3.5)
+		return lerp(CYAN, BLUE, h);
+	else if (hi < 4.5)
+		return lerp(BLUE, MAGENTA, h);
+	else if (hi < 5.5)
+		return lerp(MAGENTA, RED, h);
+	else
+		return float4(1.0, 0.0, 1.0, 0.0);
+}
+
+void KinectDepthInColor(
+	float2 uv			   : TEXCOORD0,
+	uniform sampler2D tex0 : register(s0),
+	out float4 result	   : COLOR	
+)
+{
+	float value = tex2D(tex0, uv).x;
+	value *= 65535.0; //range 0..2047
+
+	if (value == 2047)
+	{
+		result = float4(1.0, 0.0, 1.0, 0.0); //just for testing
+	}
+	else if (value > 1000)
+	{
+		result = float4(1.0, 0, 1.0, 0.0);
+	}
+	else
+	{
+		value = 1.0f/(-0.00307f * value + 3.33f);
+		result = depthToRGB(value*0.8+0.1);
+	}
+}
