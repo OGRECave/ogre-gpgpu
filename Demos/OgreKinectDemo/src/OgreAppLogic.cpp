@@ -2,6 +2,7 @@
 #include "OgreApp.h"
 #include <Ogre.h>
 #include <OgrePanelOverlayElement.h>
+#include <algorithm>
 
 #include "StatsFrameListener.h"
 
@@ -177,14 +178,14 @@ bool OgreAppLogic::processInputs(Ogre::Real deltaTime)
 
 	if (keyboard->isKeyDown(OIS::KC_SUBTRACT) && mTimeUntilNextToggle <= 0)
 	{		
-		mKinectMotorPosition = max(0.0f, mKinectMotorPosition - 0.05f); 
+		mKinectMotorPosition = std::max(0.0f, (float)mKinectMotorPosition - 0.05f); 
 		mKinect->setMotorPosition(mKinectMotorPosition);
 		mTimeUntilNextToggle = 0.1f;
 	}
 
 	if (keyboard->isKeyDown(OIS::KC_ADD) && mTimeUntilNextToggle <= 0)
 	{		
-		mKinectMotorPosition = min(1.0f, mKinectMotorPosition + 0.05f);
+		mKinectMotorPosition = std::min(1.0f, (float)mKinectMotorPosition + 0.05f);
 		mKinect->setMotorPosition(mKinectMotorPosition);
 		mTimeUntilNextToggle = 0.1f;
 	}
