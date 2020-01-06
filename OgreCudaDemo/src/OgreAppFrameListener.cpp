@@ -12,7 +12,6 @@ OgreAppFrameListener::OgreAppFrameListener(OgreApp* app) : mApplication(app)
 	if(window)
 	{
 		windowResized(window);
-		WindowEventUtilities::addWindowEventListener(window, this);
 	}
 
 	mWindowClosed = false;
@@ -22,7 +21,6 @@ OgreAppFrameListener::~OgreAppFrameListener()
 {
 	Ogre::RenderWindow *window = mApplication->getRenderWindow();
 
-	WindowEventUtilities::removeWindowEventListener(window, this);
 	if(!window->isClosed())
 		windowClosed(window);
 }

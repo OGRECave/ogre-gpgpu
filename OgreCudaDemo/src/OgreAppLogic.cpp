@@ -1,9 +1,7 @@
 #include "OgreAppLogic.h"
 #include "OgreApp.h"
 #include <Ogre.h>
-#include <OgrePanelOverlayElement.h>
-
-#include "StatsFrameListener.h"
+#include <iostream>
 
 using namespace Ogre;
 
@@ -16,7 +14,6 @@ OgreAppLogic::OgreAppLogic()
 	// ogre
 	mSceneMgr		= 0;
 	mViewport		= 0;
-	mStatsFrameListener = 0;
 	mOISListener.mParent = this;
 	mTotalTime = 0;
 	mOgreTexture.setNull();
@@ -42,10 +39,6 @@ bool OgreAppLogic::init(void)
 	createViewport();
 	createCamera();
 	createScene();
-
-	mStatsFrameListener = new StatsFrameListener(mApplication->getRenderWindow());
-	mApplication->getOgreRoot()->addFrameListener(mStatsFrameListener);
-	mStatsFrameListener->showDebugOverlay(true);
 
 	mApplication->getKeyboard()->setEventCallback(&mOISListener);
 	mApplication->getMouse()->setEventCallback(&mOISListener);
@@ -124,10 +117,6 @@ void OgreAppLogic::shutdown(void)
 	mCudaRoot->shutdown();
 	Ogre::Cuda::Root::destroyRoot(mCudaRoot);
 	mOgreTexture.setNull();
-	
-	mApplication->getOgreRoot()->removeFrameListener(mStatsFrameListener);
-	delete mStatsFrameListener;
-	mStatsFrameListener = 0;
 	
 	if(mSceneMgr)
 		mApplication->getOgreRoot()->destroySceneManager(mSceneMgr);

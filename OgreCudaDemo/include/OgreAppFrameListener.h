@@ -5,7 +5,7 @@
 
 class OgreApp;
 
-class OgreAppFrameListener : public Ogre::FrameListener, public Ogre::WindowEventListener
+class OgreAppFrameListener : public Ogre::FrameListener
 {
 public:
 	// Constructor takes a RenderWindow because it uses that to determine input context

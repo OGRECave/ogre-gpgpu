@@ -5,7 +5,7 @@
 
 using namespace Ogre;
 
-OgreApp *Ogre::Singleton<class OgreApp>::ms_Singleton = 0;
+template<> OgreApp *Ogre::Singleton<class OgreApp>::msSingleton = 0;
 
 OgreApp::OgreApp()
 {
@@ -46,7 +46,7 @@ bool OgreApp::init(void)
 
 	mRoot = new Ogre::Root("plugins.cfg", "ogre.cfg", "Ogre.log");
 
-	if(!mRoot->showConfigDialog())
+	if(!mRoot->showConfigDialog(NULL))
 		return false;
 
 	mWindow = mRoot->initialise(true);
@@ -55,7 +55,7 @@ bool OgreApp::init(void)
 
 	setupResources();
 
-	// le frame listener prévient l'application de la taille de la fenetre
+	// le frame listener prï¿½vient l'application de la taille de la fenetre
 	mFrameListener = new OgreAppFrameListener(this);
 	mRoot->addFrameListener(mFrameListener);
 
@@ -73,7 +73,7 @@ void OgreApp::run(void)
 	shutdown();
 }
 
-// Boucle de mise à jour de l'OgreApp, appellée par le frame listener
+// Boucle de mise ï¿½ jour de l'OgreApp, appellï¿½e par le frame listener
 bool OgreApp::update(Ogre::Real deltaTime)
 {
 	updateInputDevices();

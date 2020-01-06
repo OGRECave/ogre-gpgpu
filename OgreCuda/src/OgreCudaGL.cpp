@@ -29,9 +29,29 @@
 #include <cuda_gl_interop.h>
 #include <cudaGL.h>
 
-#include <OgreWin32Context.h>
-
 //GLRoot
+
+static GLenum getGLTextureTarget(Ogre::TextureType mTextureType)
+{
+    using namespace Ogre;
+    switch (mTextureType)
+    {
+    case TEX_TYPE_1D:
+        return GL_TEXTURE_1D;
+    case TEX_TYPE_2D:
+        return GL_TEXTURE_2D;
+    case TEX_TYPE_3D:
+        return GL_TEXTURE_3D;
+    case TEX_TYPE_CUBE_MAP:
+        return GL_TEXTURE_CUBE_MAP;
+    case TEX_TYPE_2D_ARRAY:
+        return GL_TEXTURE_2D_ARRAY;
+    case TEX_TYPE_2D_RECT:
+        return GL_TEXTURE_RECTANGLE;
+    default:
+        return 0;
+    };
+}
 
 using namespace Ogre::Cuda;
 
@@ -57,12 +77,12 @@ void GLRoot::init()
 GLTexture::GLTexture(Ogre::TexturePtr& texture)
 : Texture(texture)
 {
-	mGLTextureId = static_cast<Ogre::GLTexturePtr>(mTexture)->getGLID();
+    mGLTextureId = mTexture->getCustomAttribute("GLID");
 }
 
 void GLTexture::registerForCudaUse()
 {
-	GLenum target = static_cast<Ogre::GLTexturePtr>(mTexture)->getGLTextureTarget();
+	GLenum target = getGLTextureTarget(mTexture->getTextureType());
 	cudaGraphicsGLRegisterImage(&mCudaRessource, mGLTextureId, target, cudaGraphicsRegisterFlagsNone);
 	allocate();
 }

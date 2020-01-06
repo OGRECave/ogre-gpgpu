@@ -9,7 +9,6 @@
 #include "CudaVertexBufferRenderable.h"
 
 class OgreApp;
-class StatsFrameListener;
 
 class OgreAppLogic
 {
@@ -65,8 +64,6 @@ protected:
 	Ogre::Real mTotalTime;
 	bool mIsCudaEnabled;
 	Ogre::Real mTimeUntilNextToggle;
-
-	StatsFrameListener *mStatsFrameListener;
 
 	// OIS
 	class OISListener : public OIS::MouseListener, public OIS::KeyListener
